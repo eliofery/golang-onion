@@ -27,3 +27,9 @@ go get github.com/stretchr/testify
 ```bash
 go get github.com/spf13/viper
 ```
+
+[sqlite3 - база данных sqlite](https://github.com/mattn/go-sqlite3)
+
+```bash
+go get github.com/mattn/go-sqlite3
+```

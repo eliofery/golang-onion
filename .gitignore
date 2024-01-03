@@ -1,1 +1,3 @@
 .idea
+
+internal/database/sqlite.db

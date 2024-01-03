@@ -1,18 +1,33 @@
 package main
 
 import (
-	"fmt"
 	"github.com/eliofery/golang-angular/pkg/config"
 	"github.com/eliofery/golang-angular/pkg/config/godotenv"
 	"github.com/eliofery/golang-angular/pkg/config/viperr"
+	"github.com/eliofery/golang-angular/pkg/database"
+	"github.com/eliofery/golang-angular/pkg/database/sqlite"
+	"github.com/gofiber/fiber/v3/log"
 	"github.com/spf13/viper"
 	"os"
 )
 
 func main() {
-	config.Init(godotenv.New(".env"))
-	fmt.Println(os.Getenv("SERVER_URL"))
+	// Тест godotenv
+	env, err := config.Init(godotenv.New(".env"))
+	if err == nil {
+		log.Info(os.Getenv("SERVER_URL"))
+	}
 
-	config.Init(viperr.New())
-	fmt.Println(viper.GetString("server.url"))
+	// Тест viperr
+	yml, err := config.Init(viperr.New())
+	_ = yml
+	if err == nil {
+		log.Info(viper.GetString("server.url"))
+	}
+
+	// Тест sqlite
+	_, err = database.Connect(sqlite.New(env))
+	if err == nil {
+		log.Info("подключение БД sqlite")
+	}
 }
