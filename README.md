@@ -16,8 +16,14 @@ go get -u github.com/gofiber/fiber/v3
 go get github.com/joho/godotenv
 ```
 
-[testify - тестирование](https://github.com/stretchr/testify/)
+[testify - тестирование](https://github.com/stretchr/testify)
 
 ```bash
 go get github.com/stretchr/testify
+```
+
+[viper - yml конфигурация](https://github.com/spf13/viper)
+
+```bash
+go get github.com/spf13/viper
 ```
