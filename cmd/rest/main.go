@@ -1,45 +1,32 @@
 package main
 
 import (
+	"fmt"
 	"github.com/eliofery/golang-angular/pkg/config"
 	"github.com/eliofery/golang-angular/pkg/config/godotenv"
-	"github.com/eliofery/golang-angular/pkg/config/viperr"
+	"github.com/eliofery/golang-angular/pkg/core"
 	"github.com/eliofery/golang-angular/pkg/database"
 	"github.com/eliofery/golang-angular/pkg/database/postgres"
-	"github.com/eliofery/golang-angular/pkg/database/sqlite"
-	"github.com/gofiber/fiber/v3/log"
-	"github.com/spf13/viper"
-	"os"
+	"github.com/gofiber/fiber/v3/middleware/cors"
 )
 
 func main() {
-	// Тест godotenv
-	env, err := config.Init(godotenv.New(".env"))
-	if err == nil {
-		log.Info(os.Getenv("SERVER_URL"))
-	}
+	conf := config.MustInit(godotenv.New())
+	db := database.MustConnect(postgres.New(conf))
 
-	// Тест viperr
-	yml, err := config.Init(viperr.New())
-	if err == nil {
-		log.Info(viper.GetString("server.url"))
-	}
-
-	// Тест sqlite
-	_, err = database.Connect(sqlite.New(env))
-	if err == nil {
-		log.Info("подключение БД sqlite")
-	}
-
-	// Тест postgres
-	db, err := database.Connect(postgres.New(yml))
-	if err == nil {
-		log.Info("подключение БД postgres")
-	}
-
-	// Тест миграции
-	err = database.Migrate(db)
-	if err == nil {
-		log.Info("миграция БД")
-	}
+	rest := core.New(conf, db)
+	rest.UseMiddlewares(
+		cors.New(cors.Config{
+			AllowOrigins: fmt.Sprintf(
+				"%s://%s:%s",
+				conf.Get("SERVER_PROTOCOL"), conf.Get("SERVER_URL"), conf.Get("SERVER_PORT"),
+			),
+			AllowMethods:     "GET, POST, PUT, DELETE",
+			AllowHeaders:     "Origin, Content-Type, Accept",
+			ExposeHeaders:    "Content-Length, Access-Control-Allow-Origin",
+			AllowCredentials: true,
+		}),
+	)
+	rest.UseRoutes()
+	rest.MustRun()
 }
