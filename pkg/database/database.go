@@ -17,6 +17,8 @@ type Database interface {
 }
 
 // Connect подключение к БД
+// Пример: database.Connect(postgres.New(config))
+// config - godotenv, viperr
 func Connect(driver Database) (*sql.DB, error) {
 	op := "database.Connect"
 

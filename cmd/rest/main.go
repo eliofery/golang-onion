@@ -32,8 +32,14 @@ func main() {
 	}
 
 	// Тест postgres
-	_, err = database.Connect(postgres.New(yml))
+	db, err := database.Connect(postgres.New(yml))
 	if err == nil {
 		log.Info("подключение БД postgres")
+	}
+
+	// Тест миграции
+	err = database.Migrate(db)
+	if err == nil {
+		log.Info("миграция БД")
 	}
 }

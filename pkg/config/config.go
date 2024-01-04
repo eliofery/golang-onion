@@ -14,6 +14,7 @@ type Config interface {
 }
 
 // Init инициализация конфигурации
+// Пример: config.Init(viperr.New())
 func Init(config Config) (Config, error) {
 	op := "config.Init"
 
