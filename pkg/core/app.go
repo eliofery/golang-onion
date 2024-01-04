@@ -13,8 +13,9 @@ import (
 type App struct {
 	config      config.Config
 	db          *sql.DB
-	routes      []Route
+	options     fiber.Config
 	middlewares []fiber.Handler
+	routes      []Route
 }
 
 func New(conf config.Config, db *sql.DB) *App {
@@ -22,6 +23,13 @@ func New(conf config.Config, db *sql.DB) *App {
 		config: conf,
 		db:     db,
 	}
+}
+
+// SetOptions задает дополнительные настройки для сервера
+func (a *App) SetOptions(options fiber.Config) *App {
+	a.options = options
+
+	return a
 }
 
 // UseMiddlewares использование промежуточное программное обеспечение
@@ -58,7 +66,14 @@ func (a *App) MustRun() {
 		log.Fatal(fmt.Errorf("%s: %w", op, err))
 	}
 
-	server := fiber.New()
+	server := fiber.New(fiber.Config{
+		ErrorHandler: func(c fiber.Ctx, err error) error {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"success": false,
+				"message": "ссылка не найдена",
+			})
+		},
+	})
 	a.registerMiddlewares(server, a.middlewares)
 	a.registerRoutes(server, a.routes)
 	if err := a.listen(server); err != nil {
