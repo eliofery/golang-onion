@@ -6,3 +6,10 @@ server:
 sqlite:
   path: internal/database/sqlite.db
 
+postgres:
+  host: localhost
+  port: 5432
+  user: root
+  password: 123456
+  database: goan
+  sslmode: disable

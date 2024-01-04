@@ -5,6 +5,7 @@ import (
 	"github.com/eliofery/golang-angular/pkg/config/godotenv"
 	"github.com/eliofery/golang-angular/pkg/config/viperr"
 	"github.com/eliofery/golang-angular/pkg/database"
+	"github.com/eliofery/golang-angular/pkg/database/postgres"
 	"github.com/eliofery/golang-angular/pkg/database/sqlite"
 	"github.com/gofiber/fiber/v3/log"
 	"github.com/spf13/viper"
@@ -20,7 +21,6 @@ func main() {
 
 	// Тест viperr
 	yml, err := config.Init(viperr.New())
-	_ = yml
 	if err == nil {
 		log.Info(viper.GetString("server.url"))
 	}
@@ -29,5 +29,11 @@ func main() {
 	_, err = database.Connect(sqlite.New(env))
 	if err == nil {
 		log.Info("подключение БД sqlite")
+	}
+
+	// Тест postgres
+	_, err = database.Connect(postgres.New(yml))
+	if err == nil {
+		log.Info("подключение БД postgres")
 	}
 }

@@ -33,3 +33,11 @@ go get github.com/spf13/viper
 ```bash
 go get github.com/mattn/go-sqlite3
 ```
+
+[pgx - база данных postgres](https://github.com/jackc/pgx)
+[pgerrcode - коды ошибок postgres](https://github.com/jackc/pgerrcode)
+
+```bash
+go get github.com/jackc/pgx/v5
+go get github.com/jackc/pgerrcode
+```
