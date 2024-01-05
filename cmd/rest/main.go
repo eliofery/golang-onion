@@ -1,7 +1,9 @@
 package main
 
 import (
+	"github.com/eliofery/golang-angular/internal/controller"
 	"github.com/eliofery/golang-angular/internal/middleware"
+	"github.com/eliofery/golang-angular/internal/repository"
 	"github.com/eliofery/golang-angular/internal/route"
 	"github.com/eliofery/golang-angular/pkg/config"
 	"github.com/eliofery/golang-angular/pkg/config/godotenv"
@@ -15,6 +17,8 @@ func main() {
 	conf := config.MustInit(godotenv.New())
 	db := database.MustConnect(postgres.New(conf))
 
+	_ = repository.NewDAO(db)
+
 	rest := core.New(conf, db)
 	rest.SetOptions(fiber.Config{
 		ErrorHandler: middleware.NotFound,
@@ -23,8 +27,8 @@ func main() {
 		middleware.Cors(conf),
 	)
 	rest.UseRoutes(
-		route.NewAuth(),
-		route.NewUser(),
+		route.NewAuth(controller.AuthController{}),
+		route.NewUser(controller.UserController{}),
 	)
 	rest.MustRun()
 }

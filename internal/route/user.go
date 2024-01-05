@@ -1,24 +1,21 @@
 package route
 
 import (
+	"github.com/eliofery/golang-angular/internal/controller"
 	"github.com/eliofery/golang-angular/pkg/core"
 	"github.com/gofiber/fiber/v3"
 )
 
-// User маршруты связанные с авторизацией пользователя
+// User маршруты связанные с пользователями
 type User struct {
+	handler controller.UserController
 }
 
-func NewUser() core.Route {
-	return &User{}
+func NewUser(handler controller.UserController) core.Route {
+	return &User{handler: handler}
 }
 
-func (a *User) Setup(app *fiber.App) {
+func (u *User) Setup(app *fiber.App) {
 	auth := app.Group("/api/v1/user")
-	auth.Get("/", func(ctx fiber.Ctx) error {
-		return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-			"success": true,
-			"message": "Пользователь",
-		})
-	})
+	auth.Get("/", u.handler.GetUser)
 }
