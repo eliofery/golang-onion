@@ -5,6 +5,7 @@ import (
 	"github.com/eliofery/golang-angular/internal/middleware"
 	"github.com/eliofery/golang-angular/internal/repository"
 	"github.com/eliofery/golang-angular/internal/route"
+	"github.com/eliofery/golang-angular/internal/service"
 	"github.com/eliofery/golang-angular/pkg/config"
 	"github.com/eliofery/golang-angular/pkg/config/godotenv"
 	"github.com/eliofery/golang-angular/pkg/core"
@@ -14,11 +15,20 @@ import (
 )
 
 func main() {
+	// Первостепенная инициализация
 	conf := config.MustInit(godotenv.New())
 	db := database.MustConnect(postgres.New(conf))
 
-	_ = repository.NewDAO(db)
+	// Связывание логики приложения
+	dao := repository.NewDAO(db)
+	authRoutes := route.NewAuth(controller.AuthController{
+		UserService: service.NewUserService(dao),
+	})
+	userRoutes := route.NewUser(controller.UserController{
+		AuthService: service.NewAuthService(dao),
+	})
 
+	// Запуск приложения
 	rest := core.New(conf, db)
 	rest.SetOptions(fiber.Config{
 		ErrorHandler: middleware.NotFound,
@@ -27,8 +37,8 @@ func main() {
 		middleware.Cors(conf),
 	)
 	rest.UseRoutes(
-		route.NewAuth(controller.AuthController{}),
-		route.NewUser(controller.UserController{}),
+		authRoutes,
+		userRoutes,
 	)
 	rest.MustRun()
 }
