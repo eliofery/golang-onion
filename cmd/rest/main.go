@@ -21,24 +21,21 @@ func main() {
 
 	// Связывание логики приложения
 	dao := repository.NewDAO(db)
-	authRoutes := route.NewAuth(controller.AuthController{
-		UserService: service.NewUserService(dao),
-	})
-	userRoutes := route.NewUser(controller.UserController{
-		AuthService: service.NewAuthService(dao),
-	})
+	handler := controller.NewController(
+		service.NewAuthService(dao),
+		service.NewUserService(dao),
+	)
 
 	// Запуск приложения
-	rest := core.New(conf, db)
-	rest.SetOptions(fiber.Config{
-		ErrorHandler: middleware.NotFound,
-	})
-	rest.UseMiddlewares(
-		middleware.Cors(conf),
-	)
-	rest.UseRoutes(
-		authRoutes,
-		userRoutes,
-	)
-	rest.MustRun()
+	core.New(conf, db).
+		SetOptions(fiber.Config{
+			ErrorHandler: middleware.NotFound,
+		}).
+		UseMiddlewares(
+			middleware.Cors(conf),
+		).
+		UseRoutes(
+			route.NewRouter(handler),
+		).
+		MustRun()
 }

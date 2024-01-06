@@ -66,14 +66,7 @@ func (a *App) MustRun() {
 		log.Fatal(fmt.Errorf("%s: %w", op, err))
 	}
 
-	server := fiber.New(fiber.Config{
-		ErrorHandler: func(c fiber.Ctx, err error) error {
-			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-				"success": false,
-				"message": "ссылка не найдена",
-			})
-		},
-	})
+	server := fiber.New(a.options)
 	a.registerMiddlewares(server, a.middlewares)
 	a.registerRoutes(server, a.routes)
 	if err := a.listen(server); err != nil {
