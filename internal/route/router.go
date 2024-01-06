@@ -6,6 +6,10 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
+const (
+	apiV1 = "/api/v1"
+)
+
 // Router маршрутизатор
 type Router struct {
 	handler controller.ServiceController
@@ -15,7 +19,8 @@ func NewRouter(handler controller.ServiceController) core.Route {
 	return &Router{handler: handler}
 }
 
-func (r *Router) Setup(app *fiber.App) {
+// Register регистрация маршрутов
+func (r *Router) Register(app *fiber.App) {
 	r.userRoute(app)
 	r.authRoute(app)
 }

@@ -1,11 +1,13 @@
 package service
 
 import (
+	"github.com/eliofery/golang-angular/internal/model"
 	"github.com/eliofery/golang-angular/internal/repository"
 )
 
+// AuthService содержит бизнес логику авторизации пользователя
 type AuthService interface {
-	Auth()
+	SignUp(user model.User)
 }
 
 type authService struct {
@@ -16,4 +18,7 @@ func NewAuthService(dao repository.DAO) AuthService {
 	return &authService{dao: dao}
 }
 
-func (u *authService) Auth() {}
+// SignUp регистрация пользователя
+func (u *authService) SignUp(user model.User) {
+
+}

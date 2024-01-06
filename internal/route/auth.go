@@ -2,7 +2,9 @@ package route
 
 import "github.com/gofiber/fiber/v3"
 
+// authRoute маршруты связанные с авторизацией
 func (r *Router) authRoute(app *fiber.App) {
-	api := app.Group("/api/v1/auth")
-	api.Get("/", r.handler.Auth)
+	api := app.Group(apiV1)
+
+	api.Post("/signup", r.handler.CreateUser)
 }

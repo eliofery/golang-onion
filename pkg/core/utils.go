@@ -26,7 +26,7 @@ func (a *App) registerMiddlewares(app *fiber.App, middlewares []fiber.Handler) {
 // RegisterRoutes регистрация маршрутов
 func (a *App) registerRoutes(app *fiber.App, routes []Route) {
 	for _, route := range routes {
-		route.Setup(app)
+		route.Register(app)
 	}
 }
 
