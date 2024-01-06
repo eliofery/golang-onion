@@ -13,3 +13,8 @@ postgres:
   password: 123456
   database: goan
   sslmode: disable
+
+# openssl rand -base64 172 | tr -d '\ n'
+jwt:
+  secret: 9bt7EMA3BEu6QwRPTE4Vzwg2486U5cSlNCt0PF1YFA2Crua5hoPA2RFgeBl39OlPGMsweg5adc3KAiev3q94vLJtwRYRPbPw5
+  expires: 3600

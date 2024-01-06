@@ -5,6 +5,7 @@ go 1.21.5
 require (
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/gofiber/fiber/v3 v3.0.0-20240113152607-1588b6b60210
+	github.com/golang-jwt/jwt/v5 v5.2.0
 	github.com/jackc/pgx/v5 v5.5.2
 	github.com/joho/godotenv v1.5.1
 	github.com/mattn/go-sqlite3 v1.14.19

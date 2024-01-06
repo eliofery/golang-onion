@@ -11,17 +11,19 @@ import (
 	"github.com/eliofery/golang-angular/pkg/core"
 	"github.com/eliofery/golang-angular/pkg/database"
 	"github.com/eliofery/golang-angular/pkg/database/postgres"
+	"github.com/eliofery/golang-angular/pkg/utils"
 	"github.com/gofiber/fiber/v3"
 )
 
 func main() {
-	// Первостепенная инициализация
+	// Модули приложения
 	conf := config.MustInit(godotenv.New())
 	db := database.MustConnect(postgres.New(conf))
 
-	// Связывание логики приложения
+	// Логика приложения
 	dao := repository.NewDAO(db)
 	handler := controller.NewController(
+		utils.NewJwt(conf),
 		service.NewAuthService(dao),
 		service.NewUserService(dao),
 	)

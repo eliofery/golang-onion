@@ -55,6 +55,12 @@ go get github.com/pressly/goose/v3
 go get github.com/go-sql-driver/mysql
 ```
 
+[jwt - токен](https://github.com/golang-jwt/jwt)
+
+```bash
+go get -u github.com/golang-jwt/jwt/v5
+```
+
 ## Миграция
 
 ### Создание миграции

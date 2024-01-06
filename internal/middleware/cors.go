@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/cors"
 )
 
+// Cors настройки межсайтового взаимодействия
 func Cors(conf config.Config) fiber.Handler {
 	return cors.New(cors.Config{
 		AllowOrigins: fmt.Sprintf(
