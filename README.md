@@ -2,6 +2,14 @@
 
 Краткое писание проекта.
 
+## Команды проекта
+
+Автоматическая сборка проекта при изменении файлов.
+
+```bash
+make watch
+```
+
 ## Используемые пакеты
 
 [fiber - фреймворк](https://github.com/gofiber/fiber)
@@ -59,6 +67,12 @@ go get github.com/go-sql-driver/mysql
 
 ```bash
 go get -u github.com/golang-jwt/jwt/v5
+```
+
+[modd - автоматическая компиляция при изменении файлов](https://github.com/cortesi/modd)
+
+```bash
+go install github.com/cortesi/modd/cmd/modd@latest
 ```
 
 ## Миграция
