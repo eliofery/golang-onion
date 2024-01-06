@@ -75,6 +75,12 @@ go get -u github.com/golang-jwt/jwt/v5
 go install github.com/cortesi/modd/cmd/modd@latest
 ```
 
+[validator - валидация данных](https://github.com/go-playground/validator)
+
+```bash
+go get github.com/go-playground/validator/v10
+```
+
 ## Миграция
 
 ### Создание миграции

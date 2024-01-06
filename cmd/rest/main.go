@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/eliofery/golang-angular/internal/controller"
 	"github.com/eliofery/golang-angular/internal/middleware"
+	"github.com/eliofery/golang-angular/internal/model"
 	"github.com/eliofery/golang-angular/internal/repository"
 	"github.com/eliofery/golang-angular/internal/route"
 	"github.com/eliofery/golang-angular/internal/service"
@@ -12,6 +13,7 @@ import (
 	"github.com/eliofery/golang-angular/pkg/database"
 	"github.com/eliofery/golang-angular/pkg/database/postgres"
 	"github.com/eliofery/golang-angular/pkg/utils"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v3"
 )
 
@@ -19,10 +21,13 @@ func main() {
 	// Модули приложения
 	conf := config.MustInit(godotenv.New())
 	db := database.MustConnect(postgres.New(conf))
+	validate := utils.NewValidate(validator.New())
 
 	// Логика приложения
+
 	dao := repository.NewDAO(db)
-	handler := controller.NewController(
+	handler := controller.NewServiceController(
+		model.NewValidate(validate),
 		utils.NewJwt(conf),
 		service.NewAuthService(dao),
 		service.NewUserService(dao),

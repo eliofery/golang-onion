@@ -1,24 +1,31 @@
 package controller
 
 import (
+	"github.com/eliofery/golang-angular/internal/model"
 	"github.com/eliofery/golang-angular/internal/service"
 	"github.com/eliofery/golang-angular/pkg/utils"
 )
 
 // ServiceController обработчик маршрутов
 type ServiceController struct {
-	jwtService  utils.Jwt
+	validator model.Validate
+	jwt       utils.Jwt
+
 	authService service.AuthService
 	userService service.UserService
 }
 
-func NewController(
-	jwtService utils.Jwt,
+func NewServiceController(
+	validator model.Validate,
+	jwt utils.Jwt,
+
 	authService service.AuthService,
 	userService service.UserService,
 ) ServiceController {
 	return ServiceController{
-		jwtService:  jwtService,
+		validator: validator,
+		jwt:       jwt,
+
 		authService: authService,
 		userService: userService,
 	}
