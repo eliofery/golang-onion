@@ -3,10 +3,13 @@ package controller
 import (
 	"github.com/eliofery/golang-angular/internal/model"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/log"
 )
 
 // CreateUser создание пользователя
 func (c *ServiceController) CreateUser(ctx fiber.Ctx) error {
+	log.Info("создание пользователя")
+
 	var user model.User
 	if err := c.bodyValidate(ctx, &user); err != nil {
 		return err

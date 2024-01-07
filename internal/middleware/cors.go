@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"github.com/eliofery/golang-angular/pkg/config"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/log"
 	"github.com/gofiber/fiber/v3/middleware/cors"
 )
 
 // Cors настройки межсайтового взаимодействия
 func Cors(conf config.Config) fiber.Handler {
+	log.Info("регистрация CORS")
+
 	return cors.New(cors.Config{
 		AllowOrigins: fmt.Sprintf(
 			"%s://%s:%s",

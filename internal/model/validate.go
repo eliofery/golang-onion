@@ -12,6 +12,8 @@ type Validate struct {
 }
 
 func NewValidate(validate *utils.Validate) Validate {
+	log.Info("инициализация пользовательской валидации")
+
 	var v Validate
 	v.Validate = validate
 	v.registerValidations()

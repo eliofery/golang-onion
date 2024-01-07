@@ -45,7 +45,7 @@ func (a *App) listen(app *fiber.App) error {
 	}
 
 	if err := app.Listen(fmt.Sprintf("%s:%s", url, port)); err != nil {
-		log.Error(fmt.Errorf("%s: %w", op, ErrServerConnect))
+		log.Errorf("%s: %s", op, ErrServerConnect)
 		return err
 	}
 

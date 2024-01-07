@@ -28,6 +28,7 @@ type Validate struct {
 }
 
 func NewValidate(validate *validator.Validate) *Validate {
+	log.Info("инициализация валидации")
 	return &Validate{Validate: validate}
 }
 

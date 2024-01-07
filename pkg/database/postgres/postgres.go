@@ -4,8 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/eliofery/golang-angular/pkg/config"
-	"github.com/eliofery/golang-angular/pkg/database"
-	"github.com/gofiber/fiber/v3/log"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"strconv"
 )
@@ -43,19 +41,15 @@ func New(config config.Config) *Storage {
 }
 
 func (s *Storage) Init() (*sql.DB, error) {
-	op := "postgres.Connect"
-
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s", s.Host, s.Port, s.User, s.Password, s.Database, s.SSLMode)
 
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {
-		log.Error(fmt.Errorf("%s: %w", op, err))
-		return nil, database.ErrConnectDB
+		return nil, err
 	}
 
 	if err = db.Ping(); err != nil {
-		log.Error(fmt.Errorf("%s: %w", op, err))
-		return nil, database.ErrConnectDB
+		return nil, err
 	}
 
 	return db, nil

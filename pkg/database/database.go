@@ -3,7 +3,6 @@ package database
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"github.com/gofiber/fiber/v3/log"
 )
 
@@ -20,13 +19,9 @@ type Database interface {
 // Пример: database.Connect(postgres.New(config))
 // config - godotenv, viperr
 func Connect(driver Database) (*sql.DB, error) {
-	op := "database.Connect"
-
 	db, err := driver.Init()
 	if err != nil {
-		log.Error(fmt.Errorf("%s: %w", op, err))
-
-		return nil, ErrConnectDB
+		return nil, err
 	}
 
 	return db, nil
@@ -34,9 +29,11 @@ func Connect(driver Database) (*sql.DB, error) {
 
 // MustConnect подключение к БД с обработкой ошибок
 func MustConnect(driver Database) *sql.DB {
+	log.Info("подключение к БД")
+
 	db, err := Connect(driver)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("%s: %s", ErrConnectDB, err)
 	}
 
 	return db

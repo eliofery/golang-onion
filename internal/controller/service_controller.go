@@ -6,6 +6,7 @@ import (
 	"github.com/eliofery/golang-angular/internal/service"
 	"github.com/eliofery/golang-angular/pkg/utils"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/log"
 )
 
 // ServiceController обработчик маршрутов
@@ -24,6 +25,7 @@ func NewServiceController(
 	authService service.AuthService,
 	userService service.UserService,
 ) ServiceController {
+	log.Info("инициализация ServiceController")
 	return ServiceController{
 		validator: validator,
 		jwt:       jwt,

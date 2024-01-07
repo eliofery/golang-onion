@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"github.com/gofiber/fiber/v3/log"
 )
 
@@ -16,10 +15,7 @@ type Config interface {
 // Init инициализация конфигурации
 // Пример: config.Init(viperr.New())
 func Init(config Config) (Config, error) {
-	op := "config.Init"
-
 	if err := config.Load(); err != nil {
-		log.Error(fmt.Errorf("%s: %w", op, err))
 		return nil, err
 	}
 
@@ -28,6 +24,8 @@ func Init(config Config) (Config, error) {
 
 // MustInit инициализация конфигурации с обработкой ошибок
 func MustInit(config Config) Config {
+	log.Info("инициализация конфигурации")
+
 	conf, err := Init(config)
 	if err != nil {
 		log.Fatal(err)

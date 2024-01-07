@@ -3,7 +3,6 @@ package database
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"github.com/eliofery/golang-angular/internal/database"
 	"github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v3/log"
@@ -25,18 +24,14 @@ const (
 // Migrate миграция базы данных
 // Пример: database.Migrate(database.Connect(postgres.New(config.Init(viperr.New()))))
 func Migrate(db *sql.DB) error {
-	op := "database.Migrate"
-
 	goose.SetBaseFS(database.EmbedMigration)
 	defer goose.SetBaseFS(nil)
 
 	if err := goose.SetDialect(getCurrentDialect(db)); err != nil {
-		log.Error(fmt.Errorf("%s: %w", op, err))
 		return ErrSetDialect
 	}
 
 	if err := goose.Up(db, dirMigration); err != nil {
-		log.Error(fmt.Errorf("%s: %w", op, err))
 		return ErrUpMigration
 	}
 
@@ -57,7 +52,7 @@ func getCurrentDialect(db *sql.DB) string {
 	case *stdlib.Driver:
 		dialect = goose.DialectPostgres
 	default:
-		log.Error(fmt.Errorf("%s: %w", op, ErrCurrentDialect))
+		log.Errorf("%s: %s", op, ErrCurrentDialect)
 	}
 
 	return string(dialect)

@@ -2,8 +2,6 @@ package viperr
 
 import (
 	"errors"
-	"fmt"
-	"github.com/gofiber/fiber/v3/log"
 	"github.com/spf13/viper"
 	"strings"
 )
@@ -53,8 +51,6 @@ func (v *Viper) AddConfigPath(configPath ...string) *Viper {
 }
 
 func (v *Viper) Load() error {
-	op := "viperr.Load"
-
 	viper.SetConfigName(v.configName)
 	viper.SetConfigType(v.configType)
 	for _, configPath := range v.configPaths {
@@ -64,7 +60,6 @@ func (v *Viper) Load() error {
 	if err := viper.ReadInConfig(); err != nil {
 		var configFileNotFoundError viper.ConfigFileNotFoundError
 
-		log.Error(fmt.Errorf("%s: %w", op, err))
 		if errors.As(err, &configFileNotFoundError) {
 			return ErrNotFound
 		}

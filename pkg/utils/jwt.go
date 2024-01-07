@@ -29,6 +29,7 @@ type Jwt struct {
 }
 
 func NewJwt(conf config.Config) Jwt {
+	log.Info("инициализация Jwt")
 	return Jwt{conf: conf}
 }
 
@@ -37,8 +38,7 @@ func (j *Jwt) GenerateToken(userId int) (string, error) {
 	op := "utils.jwt.GenerateToken"
 
 	if j.conf.Get("JWT_SECRET") == "" {
-		log.Error(fmt.Errorf("%s: %w", op, ErrJwtSecretEmpty))
-
+		log.Errorf("%s: %s", op, ErrJwtSecretEmpty)
 		return "", ErrJwtSecretEmpty
 	}
 
@@ -54,8 +54,7 @@ func (j *Jwt) GenerateToken(userId int) (string, error) {
 
 	token, err := claims.SignedString([]byte(j.conf.Get("JWT_SECRET")))
 	if err != nil {
-		log.Error(fmt.Errorf("%s: %w", op, err))
-
+		log.Errorf("%s: %s", op, err)
 		return "", ErrJwtCreated
 	}
 
@@ -67,37 +66,32 @@ func (j *Jwt) VerifyToken(token string) (string, error) {
 	op := "utils.jwt.VerifyToken"
 
 	if j.conf.Get("JWT_SECRET") == "" {
-		log.Error(fmt.Errorf("%s: %w", op, ErrJwtSecretEmpty))
-
+		log.Errorf("%s: %s", op, ErrJwtSecretEmpty)
 		return "", ErrJwtSecretEmpty
 	}
 
 	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			log.Error(fmt.Errorf("%s: %w", op, ErrJwtSigningMethod))
-
+			log.Errorf("%s: %s", op, ErrJwtSigningMethod)
 			return nil, ErrJwtSigningMethod
 		}
 
 		return []byte(j.conf.Get("JWT_SECRET")), nil
 	})
 	if err != nil || !parsedToken.Valid {
-		log.Error(fmt.Errorf("%s: %w", op, err))
-
+		log.Errorf("%s: %s", op, err)
 		return "", ErrJwtNotValid
 	}
 
 	claims, ok := parsedToken.Claims.(jwt.MapClaims)
 	if !ok {
-		log.Error(fmt.Errorf("%s: %w", op, ErrJwtNotValid))
-
+		log.Errorf("%s: %s", op, ErrJwtNotValid)
 		return "", ErrJwtNotValid
 	}
 
 	issuer, err := claims.GetIssuer()
 	if err != nil {
-		log.Error(fmt.Errorf("%s: %w", op, err))
-
+		log.Errorf("%s: %s", op, err)
 		return "", ErrJwtNotValid
 	}
 
@@ -115,8 +109,7 @@ func (j *Jwt) GetExpiresTime() (time.Duration, error) {
 
 	expiresTime, err := strconv.ParseInt(expiresTimeString, 10, 64)
 	if err != nil {
-		log.Error(fmt.Errorf("%s: %w", op, err))
-
+		log.Errorf("%s: %s", op, err)
 		return 0, ErrJwtExpires
 	}
 
@@ -129,8 +122,7 @@ func (j *Jwt) SetCookieToken(ctx fiber.Ctx, token string) {
 
 	expiresTime, err := j.GetExpiresTime()
 	if err != nil {
-		log.Warn(fmt.Errorf("%s: %w", op, err))
-
+		log.Warnf("%s: %s", op, err)
 		return
 	}
 

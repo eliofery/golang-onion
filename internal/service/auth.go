@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/eliofery/golang-angular/internal/model"
 	"github.com/eliofery/golang-angular/internal/repository"
+	"github.com/gofiber/fiber/v3/log"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -16,6 +17,7 @@ type authService struct {
 }
 
 func NewAuthService(dao repository.DAO) AuthService {
+	log.Info("инициализация AuthService")
 	return &authService{dao: dao}
 }
 

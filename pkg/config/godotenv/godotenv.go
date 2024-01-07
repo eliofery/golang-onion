@@ -2,8 +2,6 @@ package godotenv
 
 import (
 	"errors"
-	"fmt"
-	"github.com/gofiber/fiber/v3/log"
 	"github.com/joho/godotenv"
 	"os"
 	"strings"
@@ -34,10 +32,7 @@ func New(configName ...string) *GoDotEnv {
 }
 
 func (g *GoDotEnv) Load() error {
-	op := "godotenv.Load"
-
 	if err := godotenv.Load(g.configName...); err != nil {
-		log.Error(fmt.Errorf("%s: %w", op, err))
 		return ErrNotFound
 	}
 

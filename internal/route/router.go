@@ -4,6 +4,7 @@ import (
 	"github.com/eliofery/golang-angular/internal/controller"
 	"github.com/eliofery/golang-angular/pkg/core"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/log"
 )
 
 const (
@@ -16,6 +17,7 @@ type Router struct {
 }
 
 func NewRouter(handler controller.ServiceController) core.Route {
+	log.Info("регистрация маршрутов")
 	return &Router{handler: handler}
 }
 

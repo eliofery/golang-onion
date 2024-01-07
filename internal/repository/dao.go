@@ -1,6 +1,9 @@
 package repository
 
-import "database/sql"
+import (
+	"database/sql"
+	"github.com/gofiber/fiber/v3/log"
+)
 
 // DAO предоставляет доступ к механизму взаимодействия с данными в базе данных
 type DAO interface {
@@ -12,6 +15,7 @@ type dao struct {
 }
 
 func NewDAO(db *sql.DB) DAO {
+	log.Info("инициализация DAO")
 	return &dao{db: db}
 }
 
