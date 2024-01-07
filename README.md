@@ -81,6 +81,12 @@ go install github.com/cortesi/modd/cmd/modd@latest
 go get github.com/go-playground/validator/v10
 ```
 
+[bcrypt - шифрование](https://pkg.go.dev/golang.org/x/crypto/bcrypt)
+
+```bash
+go get golang.org/x/crypto/bcrypt
+```
+
 ## Миграция
 
 ### Создание миграции

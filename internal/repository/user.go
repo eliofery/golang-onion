@@ -2,20 +2,26 @@ package repository
 
 import (
 	"database/sql"
+	"github.com/eliofery/golang-angular/internal/model"
 )
 
 // UserQuery содержит запросы в базу данных для манипуляции с пользователями
 type UserQuery interface {
-	GetUser() error
+	CreateUser(user model.User) (*int, error)
 }
 
 type userQuery struct {
 	db *sql.DB
 }
 
-func (u *userQuery) GetUser() error {
-	query := "SELECT ..."
-	_ = query
+func (u *userQuery) CreateUser(user model.User) (*int, error) {
+	query := "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id"
 
-	return nil
+	var id int
+	err := u.db.QueryRow(query, user.Email, user.Password).Scan(&id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &id, nil
 }
