@@ -1,11 +1,14 @@
 package core
 
 import (
+	"context"
 	"database/sql"
+	"fmt"
 	"github.com/eliofery/golang-angular/pkg/config"
 	"github.com/eliofery/golang-angular/pkg/database"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/log"
+	"time"
 )
 
 // App приложение
@@ -58,24 +61,43 @@ func (a *App) UseRoutes(injections ...Route) *App {
 }
 
 // MustRun запуск приложения с обработкой ошибок
-func (a *App) MustRun() {
+func (a *App) MustRun(ctx context.Context) {
 	log.Info("запуск приложения")
 	op := "app.MustRun"
 
-	defer func(db *sql.DB) {
-		if err := db.Close(); err != nil {
-			log.Fatalf("%s: %s", op, err)
+	defer func() {
+		if err := a.db.Close(); err != nil {
+			log.Errorf("%s: %s", op, err)
 		}
-	}(a.db)
+	}()
 
 	if err := database.Migrate(a.db); err != nil {
-		log.Fatalf("%s: %s", op, err)
+		log.Errorf("%s: %s", op, err)
 	}
 
 	server := fiber.New(a.options)
 	a.registerMiddlewares(server, a.middlewares)
 	a.registerRoutes(server, a.routes)
-	if err := a.listen(server); err != nil {
+
+	ch := make(chan error, 1)
+	go func() {
+		if err := a.listen(server); err != nil {
+			ch <- fmt.Errorf("не удалось запустить сервер: %w", err)
+		}
+		close(ch)
+	}()
+
+	select {
+	case err := <-ch:
 		log.Fatalf("%s: %s", op, err)
+	case <-ctx.Done():
+		log.Info("остановка приложения")
+
+		timeout, cancel := context.WithTimeout(context.Background(), time.Second*10)
+		defer cancel()
+
+		if err := server.ShutdownWithContext(timeout); err != nil {
+			log.Errorf("%s: %s", op, err)
+		}
 	}
 }

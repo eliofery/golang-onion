@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/eliofery/golang-angular/internal/controller"
 	"github.com/eliofery/golang-angular/internal/middleware"
 	"github.com/eliofery/golang-angular/internal/model"
@@ -15,6 +16,8 @@ import (
 	"github.com/eliofery/golang-angular/pkg/utils"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v3"
+	"os"
+	"os/signal"
 )
 
 func main() {
@@ -33,6 +36,8 @@ func main() {
 	)
 
 	// Запуск приложения
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
 	core.New(conf, db).
 		SetOptions(fiber.Config{
 			ErrorHandler: middleware.ErrorHandler,
@@ -43,5 +48,5 @@ func main() {
 		UseRoutes(
 			route.NewRouter(handler),
 		).
-		MustRun()
+		MustRun(ctx)
 }
