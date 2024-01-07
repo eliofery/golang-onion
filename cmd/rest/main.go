@@ -24,7 +24,6 @@ func main() {
 	validate := utils.NewValidate(validator.New())
 
 	// Логика приложения
-
 	dao := repository.NewDAO(db)
 	handler := controller.NewServiceController(
 		model.NewValidate(validate),
@@ -36,7 +35,7 @@ func main() {
 	// Запуск приложения
 	core.New(conf, db).
 		SetOptions(fiber.Config{
-			ErrorHandler: middleware.NotFound,
+			ErrorHandler: middleware.ErrorHandler,
 		}).
 		UseMiddlewares(
 			middleware.Cors(conf),

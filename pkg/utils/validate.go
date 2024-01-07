@@ -22,13 +22,6 @@ const (
 	langDefault = "ru"
 )
 
-type ErrorResponse struct {
-	Error       bool
-	FailedField string
-	Tag         string
-	Value       any
-}
-
 // Validate валидация данных
 type Validate struct {
 	*validator.Validate
@@ -39,10 +32,10 @@ func NewValidate(validate *validator.Validate) *Validate {
 }
 
 // Validation валидация входных данных
-func (v *Validate) Validation(data any, langOptions ...string) []string {
+func (v *Validate) Validation(data any, langOptions ...string) []error {
 	var (
 		validatorErr validator.ValidationErrors
-		errMessages  []string
+		errMessages  []error
 	)
 
 	langString := langDefault
@@ -53,7 +46,8 @@ func (v *Validate) Validation(data any, langOptions ...string) []string {
 	lang := v.setLang(langString)
 	if err := v.Struct(data); err != nil && errors.As(err, &validatorErr) {
 		for _, validateErr := range validatorErr {
-			errMessages = append(errMessages, validateErr.Translate(lang))
+			errMessage := errors.New(validateErr.Translate(lang))
+			errMessages = append(errMessages, errMessage)
 		}
 	}
 
@@ -76,40 +70,3 @@ func (v *Validate) setLang(lang string) ut.Translator {
 
 	return trans
 }
-
-//func (v *Validate) Validation(data any) []ErrorResponse {
-//	var validationErrors []ErrorResponse
-//
-//	if errs := v.Struct(data); errs != nil {
-//		for _, err := range errs.(validator.ValidationErrors) {
-//			var elem ErrorResponse
-//
-//			elem.FailedField = err.Field()
-//			elem.Tag = err.Tag()
-//			elem.Value = err.Value()
-//			elem.Error = true
-//
-//			validationErrors = append(validationErrors, elem)
-//		}
-//	}
-//
-//	return validationErrors
-//}
-//
-//func (v *Validate) ErrMessages(errs []ErrorResponse) []string {
-//	if len(errs) == 0 && !errs[0].Error {
-//		return nil
-//	}
-//
-//	var errMessages []string
-//	for _, err := range errs {
-//		errMessages = append(errMessages, fmt.Sprintf(
-//			"Поле '%s' | Результат '%v' | Ожидание '%s'",
-//			err.FailedField,
-//			err.Value,
-//			err.Tag,
-//		))
-//	}
-//
-//	return errMessages
-//}
