@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/eliofery/golang-angular/internal/model"
+	"github.com/eliofery/golang-angular/internal/dto"
 	"github.com/eliofery/golang-angular/internal/repository"
 	"github.com/gofiber/fiber/v3/log"
 	"golang.org/x/crypto/bcrypt"
@@ -9,7 +9,7 @@ import (
 
 // AuthService содержит бизнес логику авторизации пользователя
 type AuthService interface {
-	SignUp(user model.User) (*int, error)
+	SignUp(user dto.UserCreate) (*int, error)
 }
 
 type authService struct {
@@ -22,7 +22,7 @@ func NewAuthService(dao repository.DAO) AuthService {
 }
 
 // SignUp регистрация пользователя
-func (s *authService) SignUp(user model.User) (*int, error) {
+func (s *authService) SignUp(user dto.UserCreate) (*int, error) {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err

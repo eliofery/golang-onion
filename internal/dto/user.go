@@ -1,9 +1,9 @@
 package dto
 
-type User struct {
-	ID        int
-	FirstName string
-	LastName  string
-	Email     string
-	Password  string
+type UserCreate struct {
+	FirstName       string `json:"first_name,omitempty"`
+	LastName        string `json:"last_name,omitempty"`
+	Email           string `json:"email" validate:"required,email"`
+	Password        string `json:"password,omitempty" validate:"required"`
+	PasswordConfirm string `json:"password_confirm,omitempty" validate:"required,eqfield=Password"`
 }

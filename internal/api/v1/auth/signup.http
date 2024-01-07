@@ -2,6 +2,9 @@ POST http://127.0.0.1:3000/api/v1/signup
 content-type: application/json
 
 {
+    "first_name": "Bob",
+    "last_name": "Marley",
     "email": "user@site.org",
-    "password": "123"
+    "password": "123",
+    "password_confirm": "123"
 }
