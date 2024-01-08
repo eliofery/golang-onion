@@ -11,7 +11,7 @@ import (
 
 // UserQuery содержит запросы в базу данных для манипуляции с пользователями
 type UserQuery interface {
-	Save(user dto.UserCreate) (id int, err error)
+	Save(user dto.UserCreate) (userId int, err error)
 	GetUserByEmail(email string) (user model.User, err error)
 }
 
@@ -20,10 +20,10 @@ type userQuery struct {
 }
 
 // Save создание пользователя
-func (q *userQuery) Save(user dto.UserCreate) (id int, err error) {
+func (q *userQuery) Save(user dto.UserCreate) (userId int, err error) {
 	query := "INSERT INTO users (first_name, last_name, email, password_hash) VALUES ($1, $2, $3, $4) RETURNING id"
 
-	err = q.db.QueryRow(query, user.FirstName, user.LastName, user.Email, user.Password).Scan(&id)
+	err = q.db.QueryRow(query, user.FirstName, user.LastName, user.Email, user.Password).Scan(&userId)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation {
@@ -32,7 +32,7 @@ func (q *userQuery) Save(user dto.UserCreate) (id int, err error) {
 		return 0, err
 	}
 
-	return id, nil
+	return userId, nil
 }
 
 // GetUserByEmail получить пользователя по email

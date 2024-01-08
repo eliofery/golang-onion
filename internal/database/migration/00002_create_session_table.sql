@@ -2,8 +2,9 @@
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS sessions
 (
-    id    SERIAL PRIMARY KEY,
-    token VARCHAR(255) NOT NULL UNIQUE
+    id      SERIAL PRIMARY KEY,
+    token   VARCHAR(255) NOT NULL UNIQUE,
+    user_id INT          NOT NULL
 );
 -- +goose StatementEnd
 

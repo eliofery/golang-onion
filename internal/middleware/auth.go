@@ -35,14 +35,22 @@ func SetUserIdFromToken(dao repository.DAO, tokenManager utils.TokenManager) fib
 				return 0, message
 			}
 
-			issuer, err := tokenManager.VerifyToken(tokenString)
-			if err != nil {
+			deleteToken := func() (int, error) {
 				tokenManager.RemoveCookieToken(c)
-				if err = dao.NewSessionQuery().Delete(tokenString); err != nil {
+				if err := dao.NewSessionQuery().DeleteByToken(tokenString); err != nil {
 					log.Errorf("не удалось удалить сессионный токен: %s", err)
 				}
 
 				return 0, message
+			}
+
+			if err := dao.NewSessionQuery().VerifyToken(tokenString); err != nil {
+				return deleteToken()
+			}
+
+			issuer, err := tokenManager.VerifyToken(tokenString)
+			if err != nil {
+				return deleteToken()
 			}
 
 			userId, err := strconv.Atoi(issuer)

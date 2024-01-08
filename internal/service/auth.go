@@ -13,10 +13,11 @@ import (
 
 // AuthService содержит логику авторизации пользователя
 type AuthService interface {
-	GetUserIdFromToken(ctx fiber.Ctx) (id int)
-	Register(user dto.UserCreate) (id int, err error)
+	GetUserIdFromToken(ctx fiber.Ctx) (userId int)
+	Register(user dto.UserCreate) (userId int, err error)
 	RegisterAndAuth(ctx fiber.Ctx, user dto.UserCreate) (token string, err error)
 	Auth(ctx fiber.Ctx, user dto.UserAuth) (token string, err error)
+	Logout(ctx fiber.Ctx, userId int) error
 }
 
 type authService struct {
@@ -45,34 +46,34 @@ func (s *authService) GetUserIdFromToken(ctx fiber.Ctx) (userId int) {
 }
 
 // Register регистрация пользователя
-func (s *authService) Register(user dto.UserCreate) (id int, err error) {
+func (s *authService) Register(user dto.UserCreate) (userId int, err error) {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return 0, err
 	}
 
 	user.Password = string(passwordHash)
-	id, err = s.dao.NewUserQuery().Save(user)
+	userId, err = s.dao.NewUserQuery().Save(user)
 	if err != nil {
 		return 0, err
 	}
 
-	return id, nil
+	return userId, nil
 }
 
 // RegisterAndAuth регистрация и авторизация пользователя
 func (s *authService) RegisterAndAuth(ctx fiber.Ctx, user dto.UserCreate) (token string, err error) {
-	id, err := s.Register(user)
+	userId, err := s.Register(user)
 	if err != nil {
 		return "", err
 	}
 
-	token, err = s.jwt.GenerateToken(id)
+	token, err = s.jwt.GenerateToken(userId)
 	if err != nil {
 		return "", err
 	}
 
-	if err = s.dao.NewSessionQuery().Save(token); err != nil {
+	if err = s.dao.NewSessionQuery().Save(userId, token); err != nil {
 		return "", err
 	}
 
@@ -98,7 +99,23 @@ func (s *authService) Auth(ctx fiber.Ctx, user dto.UserAuth) (token string, err 
 		return "", err
 	}
 
+	if err = s.dao.NewSessionQuery().Save(findUser.ID, token); err != nil {
+		return "", err
+	}
+
 	s.jwt.SetCookieToken(ctx, token)
 
 	return token, nil
+}
+
+// Logout выход пользователя из системы
+func (s *authService) Logout(ctx fiber.Ctx, userId int) error {
+	err := s.dao.NewSessionQuery().DeleteByUserId(userId)
+	if err != nil {
+		return err
+	}
+
+	s.jwt.RemoveCookieToken(ctx)
+
+	return nil
 }

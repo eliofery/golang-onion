@@ -6,8 +6,10 @@ import (
 
 // SessionQuery содержит запросы в базу данных для манипуляции с пользователями
 type SessionQuery interface {
-	Save(token string) error
-	Delete(token string) error
+	Save(userId int, token string) error
+	DeleteByToken(token string) error
+	DeleteByUserId(userId int) error
+	VerifyToken(token string) error
 }
 
 type sessionQuery struct {
@@ -15,8 +17,19 @@ type sessionQuery struct {
 }
 
 // Save сохранение токена
-func (q *sessionQuery) Save(token string) error {
-	query := "INSERT INTO sessions (token) VALUES ($1)"
+func (q *sessionQuery) Save(userId int, token string) error {
+	query := "INSERT INTO sessions (token, user_id) VALUES ($1, $2)"
+	_, err := q.db.Exec(query, token, userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// DeleteByToken удаление сессии по токену
+func (q *sessionQuery) DeleteByToken(token string) error {
+	query := "DELETE FROM sessions WHERE token = $1"
 	_, err := q.db.Exec(query, token)
 	if err != nil {
 		return err
@@ -25,9 +38,20 @@ func (q *sessionQuery) Save(token string) error {
 	return nil
 }
 
-// Delete удаление токена
-func (q *sessionQuery) Delete(token string) error {
-	query := "DELETE FROM sessions WHERE token = $1"
+// DeleteByUserId удаление сессии по id пользователя
+func (q *sessionQuery) DeleteByUserId(userId int) error {
+	query := "DELETE FROM sessions WHERE user_id = $1"
+	_, err := q.db.Exec(query, userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// VerifyToken проверка токена на наличие в БД
+func (q *sessionQuery) VerifyToken(token string) error {
+	query := "SELECT id FROM sessions WHERE token = $1"
 	_, err := q.db.Exec(query, token)
 	if err != nil {
 		return err

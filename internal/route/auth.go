@@ -1,6 +1,9 @@
 package route
 
-import "github.com/gofiber/fiber/v3"
+import (
+	"github.com/eliofery/golang-angular/internal/middleware"
+	"github.com/gofiber/fiber/v3"
+)
 
 // authRoute маршруты связанные с авторизацией
 func (r *Router) authRoute(app *fiber.App) {
@@ -8,4 +11,5 @@ func (r *Router) authRoute(app *fiber.App) {
 
 	api.Post("/signup", r.handler.SignUp)
 	api.Post("/signin", r.handler.SignIn)
+	api.Post("/logout", r.handler.Logout, middleware.IsAuth)
 }
