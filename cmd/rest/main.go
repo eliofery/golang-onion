@@ -46,6 +46,7 @@ func main() {
 		}).
 		UseMiddlewares(
 			middleware.Cors(conf),
+			middleware.SetUserIdFromToken(dao, jwt),
 		).
 		UseRoutes(
 			route.NewRouter(handler),

@@ -8,6 +8,7 @@ import (
 // DAO предоставляет доступ к механизму взаимодействия с данными в базе данных
 type DAO interface {
 	NewUserQuery() UserQuery
+	NewSessionQuery() SessionQuery
 }
 
 type dao struct {
@@ -19,6 +20,12 @@ func NewDAO(db *sql.DB) DAO {
 	return &dao{db: db}
 }
 
+// NewUserQuery запросы в базу данных для пользователей
 func (d *dao) NewUserQuery() UserQuery {
 	return &userQuery{db: d.db}
+}
+
+// NewSessionQuery запросы в базу данных для сессий
+func (d *dao) NewSessionQuery() SessionQuery {
+	return &sessionQuery{db: d.db}
 }

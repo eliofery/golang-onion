@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"github.com/eliofery/golang-angular/internal/dto"
+	"github.com/eliofery/golang-angular/internal/middleware"
 	"github.com/eliofery/golang-angular/internal/repository"
 	"github.com/eliofery/golang-angular/pkg/utils"
 	"github.com/gofiber/fiber/v3"
@@ -12,6 +13,7 @@ import (
 
 // AuthService содержит логику авторизации пользователя
 type AuthService interface {
+	GetUserIdFromToken(ctx fiber.Ctx) (id int)
 	Register(user dto.UserCreate) (id int, err error)
 	RegisterAndAuth(ctx fiber.Ctx, user dto.UserCreate) (token string, err error)
 	Auth(ctx fiber.Ctx, user dto.UserAuth) (token string, err error)
@@ -25,6 +27,21 @@ type authService struct {
 func NewAuthService(dao repository.DAO, jwt utils.TokenManager) AuthService {
 	log.Info("инициализация сервиса авторизации")
 	return &authService{dao: dao, jwt: jwt}
+}
+
+// GetUserIdFromToken получение идентификатора пользователя из токена
+func (s *authService) GetUserIdFromToken(ctx fiber.Ctx) (userId int) {
+	cb, ok := ctx.Locals(middleware.IssuerKey).(func(cb fiber.Ctx) (int, error))
+	if !ok {
+		return 0
+	}
+
+	userId, err := cb(ctx)
+	if err != nil {
+		return 0
+	}
+
+	return userId
 }
 
 // Register регистрация пользователя
@@ -52,6 +69,10 @@ func (s *authService) RegisterAndAuth(ctx fiber.Ctx, user dto.UserCreate) (token
 
 	token, err = s.jwt.GenerateToken(id)
 	if err != nil {
+		return "", err
+	}
+
+	if err = s.dao.NewSessionQuery().Save(token); err != nil {
 		return "", err
 	}
 

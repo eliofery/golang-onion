@@ -20,10 +20,10 @@ type userQuery struct {
 }
 
 // Save создание пользователя
-func (u *userQuery) Save(user dto.UserCreate) (id int, err error) {
+func (q *userQuery) Save(user dto.UserCreate) (id int, err error) {
 	query := "INSERT INTO users (first_name, last_name, email, password_hash) VALUES ($1, $2, $3, $4) RETURNING id"
 
-	err = u.db.QueryRow(query, user.FirstName, user.LastName, user.Email, user.Password).Scan(&id)
+	err = q.db.QueryRow(query, user.FirstName, user.LastName, user.Email, user.Password).Scan(&id)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation {
@@ -36,10 +36,10 @@ func (u *userQuery) Save(user dto.UserCreate) (id int, err error) {
 }
 
 // GetUserByEmail получить пользователя по email
-func (u *userQuery) GetUserByEmail(email string) (user model.User, err error) {
+func (q *userQuery) GetUserByEmail(email string) (user model.User, err error) {
 	query := "SELECT id, password_hash FROM users WHERE email = $1"
 
-	err = u.db.QueryRow(query, email).Scan(&user.ID, &user.PasswordHash)
+	err = q.db.QueryRow(query, email).Scan(&user.ID, &user.PasswordHash)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return user, errors.New("не верный логин или пароль")

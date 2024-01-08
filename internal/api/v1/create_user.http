@@ -1,5 +1,6 @@
 POST http://127.0.0.1:3000/api/v1/user/create
 content-type: application/json
+authorization: token
 
 {
     "first_name": "Bob",
