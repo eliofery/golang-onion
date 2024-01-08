@@ -4,6 +4,7 @@ import (
 	"github.com/eliofery/golang-angular/internal/dto"
 	"github.com/eliofery/golang-angular/internal/repository"
 	"github.com/eliofery/golang-angular/pkg/utils"
+	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/log"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -11,6 +12,7 @@ import (
 // AuthService содержит логику авторизации пользователя
 type AuthService interface {
 	Register(user dto.UserCreate) (id int, err error)
+	RegisterAndAuth(ctx fiber.Ctx, user dto.UserCreate) (token string, err error)
 }
 
 type authService struct {
@@ -37,4 +39,21 @@ func (s *authService) Register(user dto.UserCreate) (id int, err error) {
 	}
 
 	return id, nil
+}
+
+// RegisterAndAuth регистрация и авторизация пользователя
+func (s *authService) RegisterAndAuth(ctx fiber.Ctx, user dto.UserCreate) (token string, err error) {
+	id, err := s.Register(user)
+	if err != nil {
+		return "", err
+	}
+
+	token, err = s.jwt.GenerateToken(id)
+	if err != nil {
+		return "", err
+	}
+
+	s.jwt.SetCookieToken(ctx, token)
+
+	return token, nil
 }

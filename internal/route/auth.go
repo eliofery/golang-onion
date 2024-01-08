@@ -6,5 +6,5 @@ import "github.com/gofiber/fiber/v3"
 func (r *Router) authRoute(app *fiber.App) {
 	api := app.Group(apiV1)
 
-	api.Post("/signup", r.handler.CreateUser)
+	api.Post("/signup", r.handler.SignUp)
 }

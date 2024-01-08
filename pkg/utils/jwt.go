@@ -43,15 +43,15 @@ func NewTokenManager(conf config.Config) TokenManager {
 }
 
 // GenerateToken создание токена
-func (j *tokenManager) GenerateToken(userId int) (token string, err error) {
+func (t *tokenManager) GenerateToken(userId int) (token string, err error) {
 	op := "utils.jwt.GenerateToken"
 
-	if j.conf.Get("JWT_SECRET") == "" {
+	if t.conf.Get("JWT_SECRET") == "" {
 		log.Errorf("%s: %s", op, ErrJwtSecretEmpty)
 		return "", ErrJwtSecretEmpty
 	}
 
-	expiresTime, err := j.GetExpiresTime()
+	expiresTime, err := t.GetExpiresTime()
 	if err != nil {
 		return "", err
 	}
@@ -61,7 +61,7 @@ func (j *tokenManager) GenerateToken(userId int) (token string, err error) {
 		"exp": time.Now().Add(time.Second * expiresTime).Unix(),
 	})
 
-	token, err = claims.SignedString([]byte(j.conf.Get("JWT_SECRET")))
+	token, err = claims.SignedString([]byte(t.conf.Get("JWT_SECRET")))
 	if err != nil {
 		log.Errorf("%s: %s", op, err)
 		return "", ErrJwtCreated
@@ -71,10 +71,10 @@ func (j *tokenManager) GenerateToken(userId int) (token string, err error) {
 }
 
 // VerifyToken валидация токена
-func (j *tokenManager) VerifyToken(token string) (issuer string, err error) {
+func (t *tokenManager) VerifyToken(token string) (issuer string, err error) {
 	op := "utils.jwt.VerifyToken"
 
-	if j.conf.Get("JWT_SECRET") == "" {
+	if t.conf.Get("JWT_SECRET") == "" {
 		log.Errorf("%s: %s", op, ErrJwtSecretEmpty)
 		return "", ErrJwtSecretEmpty
 	}
@@ -85,7 +85,7 @@ func (j *tokenManager) VerifyToken(token string) (issuer string, err error) {
 			return nil, ErrJwtSigningMethod
 		}
 
-		return []byte(j.conf.Get("JWT_SECRET")), nil
+		return []byte(t.conf.Get("JWT_SECRET")), nil
 	})
 	if err != nil || !parsedToken.Valid {
 		log.Errorf("%s: %s", op, err)
@@ -108,7 +108,7 @@ func (j *tokenManager) VerifyToken(token string) (issuer string, err error) {
 }
 
 // GetExpiresTime получить время истечения токена
-func (j *tokenManager) GetExpiresTime() (time.Duration, error) {
+func (t *tokenManager) GetExpiresTime() (time.Duration, error) {
 	op := "utils.jwt.GetExpiresTime"
 
 	expiresTimeString := os.Getenv("JWT_EXPIRES")
@@ -126,10 +126,10 @@ func (j *tokenManager) GetExpiresTime() (time.Duration, error) {
 }
 
 // SetCookieToken сохранить токен в куки
-func (j *tokenManager) SetCookieToken(ctx fiber.Ctx, token string) {
+func (t *tokenManager) SetCookieToken(ctx fiber.Ctx, token string) {
 	op := "utils.jwt.SetCookieToken"
 
-	expiresTime, err := j.GetExpiresTime()
+	expiresTime, err := t.GetExpiresTime()
 	if err != nil {
 		log.Warnf("%s: %s", op, err)
 		return
@@ -146,7 +146,7 @@ func (j *tokenManager) SetCookieToken(ctx fiber.Ctx, token string) {
 }
 
 // RemoveCookieToken удалить токен из куки
-func (j *tokenManager) RemoveCookieToken(ctx fiber.Ctx) {
+func (t *tokenManager) RemoveCookieToken(ctx fiber.Ctx) {
 	cookie := fiber.Cookie{
 		Name:     CookieTokenName,
 		Value:    "",
