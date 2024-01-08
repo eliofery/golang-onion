@@ -7,4 +7,5 @@ func (r *Router) authRoute(app *fiber.App) {
 	api := app.Group(apiV1)
 
 	api.Post("/signup", r.handler.SignUp)
+	api.Post("/signin", r.handler.SignIn)
 }

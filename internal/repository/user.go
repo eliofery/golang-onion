@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/eliofery/golang-angular/internal/dto"
+	"github.com/eliofery/golang-angular/internal/model"
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
 )
@@ -11,6 +12,7 @@ import (
 // UserQuery содержит запросы в базу данных для манипуляции с пользователями
 type UserQuery interface {
 	Save(user dto.UserCreate) (id int, err error)
+	GetUserByEmail(email string) (user model.User, err error)
 }
 
 type userQuery struct {
@@ -31,4 +33,19 @@ func (u *userQuery) Save(user dto.UserCreate) (id int, err error) {
 	}
 
 	return id, nil
+}
+
+// GetUserByEmail получить пользователя по email
+func (u *userQuery) GetUserByEmail(email string) (user model.User, err error) {
+	query := "SELECT id, password_hash FROM users WHERE email = $1"
+
+	err = u.db.QueryRow(query, email).Scan(&user.ID, &user.PasswordHash)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return user, errors.New("не верный логин или пароль")
+		}
+		return user, err
+	}
+
+	return user, nil
 }

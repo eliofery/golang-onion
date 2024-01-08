@@ -7,3 +7,8 @@ type UserCreate struct {
 	Password        string `json:"password,omitempty" validate:"required"`
 	PasswordConfirm string `json:"password_confirm,omitempty" validate:"required,eqfield=Password"`
 }
+
+type UserAuth struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password,omitempty" validate:"required"`
+}

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"github.com/eliofery/golang-angular/internal/dto"
 	"github.com/eliofery/golang-angular/internal/repository"
 	"github.com/eliofery/golang-angular/pkg/utils"
@@ -13,6 +14,7 @@ import (
 type AuthService interface {
 	Register(user dto.UserCreate) (id int, err error)
 	RegisterAndAuth(ctx fiber.Ctx, user dto.UserCreate) (token string, err error)
+	Auth(ctx fiber.Ctx, user dto.UserAuth) (token string, err error)
 }
 
 type authService struct {
@@ -49,6 +51,28 @@ func (s *authService) RegisterAndAuth(ctx fiber.Ctx, user dto.UserCreate) (token
 	}
 
 	token, err = s.jwt.GenerateToken(id)
+	if err != nil {
+		return "", err
+	}
+
+	s.jwt.SetCookieToken(ctx, token)
+
+	return token, nil
+}
+
+// Auth авторизация пользователя
+func (s *authService) Auth(ctx fiber.Ctx, user dto.UserAuth) (token string, err error) {
+	findUser, err := s.dao.NewUserQuery().GetUserByEmail(user.Email)
+	if err != nil {
+		return "", err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(findUser.PasswordHash), []byte(user.Password))
+	if err != nil {
+		return "", errors.New("не верный логин или пароль")
+	}
+
+	token, err = s.jwt.GenerateToken(findUser.ID)
 	if err != nil {
 		return "", err
 	}

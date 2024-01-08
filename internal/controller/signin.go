@@ -5,14 +5,14 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
-// SignUp авторизация нового пользователя
-func (c *ServiceController) SignUp(ctx fiber.Ctx) error {
-	var user dto.UserCreate
+// SignIn авторизация пользователя
+func (c *ServiceController) SignIn(ctx fiber.Ctx) error {
+	var user dto.UserAuth
 	if err := c.bodyValidate(ctx, &user); err != nil {
 		return err
 	}
 
-	token, err := c.authService.RegisterAndAuth(ctx, user)
+	token, err := c.authService.Auth(ctx, user)
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError)
 		return err
@@ -20,7 +20,7 @@ func (c *ServiceController) SignUp(ctx fiber.Ctx) error {
 
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"success": true,
-		"message": "пользователь создан и авторизован",
+		"message": "пользователь авторизован",
 		"token":   token,
 	})
 }
