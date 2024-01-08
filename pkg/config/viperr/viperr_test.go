@@ -14,15 +14,15 @@ func TestLoad(t *testing.T) {
 
 	testCases := []testCase{
 		{
-			test:        "Успех",
+			test:        "Успех с указанием имени файла",
 			configName:  "config",
 			expectedErr: nil,
 		}, {
-			test:        "Успех",
+			test:        "Успех без указания имени файла",
 			configName:  "",
 			expectedErr: nil,
 		}, {
-			test:        "Провал",
+			test:        "Провал с указанием не существующего файла",
 			configName:  "config_not_exist",
 			expectedErr: ErrNotFound,
 		},
@@ -34,8 +34,8 @@ func TestLoad(t *testing.T) {
 			config.AddConfigPath("../../../internal/config")
 			config.AddConfigType("yml")
 
-			err := config.Load()
-			assert.Equal(t, tc.expectedErr, err)
+			err := config.Init()
+			assert.ErrorIs(t, tc.expectedErr, err)
 		})
 	}
 }

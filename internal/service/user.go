@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/eliofery/golang-angular/internal/repository"
+	"github.com/gofiber/fiber/v3/log"
 )
 
 type UserService interface {
@@ -13,12 +14,8 @@ type userService struct {
 }
 
 func NewUserService(dao repository.DAO) UserService {
+	log.Info("инициализация сервиса пользователей")
 	return &userService{dao: dao}
 }
 
-func (u *userService) GetUser() {
-	err := u.dao.NewUserQuery().GetUser()
-	if err != nil {
-		return
-	}
-}
+func (u *userService) GetUser() {}

@@ -19,6 +19,8 @@ type Database interface {
 // Пример: database.Connect(postgres.New(config))
 // config - godotenv, viperr
 func Connect(driver Database) (*sql.DB, error) {
+	log.Info("подключение к базе данных")
+
 	db, err := driver.Init()
 	if err != nil {
 		return nil, err
@@ -29,8 +31,6 @@ func Connect(driver Database) (*sql.DB, error) {
 
 // MustConnect подключение к БД с обработкой ошибок
 func MustConnect(driver Database) *sql.DB {
-	log.Info("подключение к БД")
-
 	db, err := Connect(driver)
 	if err != nil {
 		log.Fatalf("%s: %s", ErrConnectDB, err)

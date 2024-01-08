@@ -3,35 +3,37 @@ package service
 import (
 	"github.com/eliofery/golang-angular/internal/dto"
 	"github.com/eliofery/golang-angular/internal/repository"
+	"github.com/eliofery/golang-angular/pkg/utils"
 	"github.com/gofiber/fiber/v3/log"
 	"golang.org/x/crypto/bcrypt"
 )
 
-// AuthService содержит бизнес логику авторизации пользователя
+// AuthService содержит логику авторизации пользователя
 type AuthService interface {
-	SignUp(user dto.UserCreate) (*int, error)
+	Register(user dto.UserCreate) (id int, err error)
 }
 
 type authService struct {
 	dao repository.DAO
+	jwt utils.TokenManager
 }
 
-func NewAuthService(dao repository.DAO) AuthService {
-	log.Info("инициализация AuthService")
-	return &authService{dao: dao}
+func NewAuthService(dao repository.DAO, jwt utils.TokenManager) AuthService {
+	log.Info("инициализация сервиса авторизации")
+	return &authService{dao: dao, jwt: jwt}
 }
 
-// SignUp регистрация пользователя
-func (s *authService) SignUp(user dto.UserCreate) (*int, error) {
+// Register регистрация пользователя
+func (s *authService) Register(user dto.UserCreate) (id int, err error) {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 
 	user.Password = string(passwordHash)
-	id, err := s.dao.NewUserQuery().CreateUser(user)
+	id, err = s.dao.NewUserQuery().Save(user)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 
 	return id, nil

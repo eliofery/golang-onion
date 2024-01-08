@@ -2,26 +2,33 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/eliofery/golang-angular/internal/dto"
+	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 // UserQuery содержит запросы в базу данных для манипуляции с пользователями
 type UserQuery interface {
-	CreateUser(user dto.UserCreate) (*int, error)
+	Save(user dto.UserCreate) (id int, err error)
 }
 
 type userQuery struct {
 	db *sql.DB
 }
 
-func (u *userQuery) CreateUser(user dto.UserCreate) (*int, error) {
-	query := "INSERT INTO users (first_name, last_name, email, password) VALUES ($1, $2, $3, $4) RETURNING id"
+// Save создание пользователя
+func (u *userQuery) Save(user dto.UserCreate) (id int, err error) {
+	query := "INSERT INTO users (first_name, last_name, email, password_hash) VALUES ($1, $2, $3, $4) RETURNING id"
 
-	var id int
-	err := u.db.QueryRow(query, user.FirstName, user.LastName, user.Email, user.Password).Scan(&id)
+	err = u.db.QueryRow(query, user.FirstName, user.LastName, user.Email, user.Password).Scan(&id)
 	if err != nil {
-		return nil, err
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation {
+			return 0, errors.New("пользователь уже существует")
+		}
+		return 0, err
 	}
 
-	return &id, nil
+	return id, nil
 }

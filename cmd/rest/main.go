@@ -4,10 +4,10 @@ import (
 	"context"
 	"github.com/eliofery/golang-angular/internal/controller"
 	"github.com/eliofery/golang-angular/internal/middleware"
-	"github.com/eliofery/golang-angular/internal/model"
 	"github.com/eliofery/golang-angular/internal/repository"
 	"github.com/eliofery/golang-angular/internal/route"
 	"github.com/eliofery/golang-angular/internal/service"
+	"github.com/eliofery/golang-angular/internal/validation"
 	"github.com/eliofery/golang-angular/pkg/config"
 	"github.com/eliofery/golang-angular/pkg/config/godotenv"
 	"github.com/eliofery/golang-angular/pkg/core"
@@ -25,13 +25,15 @@ func main() {
 	conf := config.MustInit(godotenv.New())
 	db := database.MustConnect(postgres.New(conf))
 	validate := utils.NewValidate(validator.New())
+	jwt := utils.NewTokenManager(conf)
 
 	// Логика приложения
 	dao := repository.NewDAO(db)
 	handler := controller.NewServiceController(
-		model.NewValidate(validate),
-		utils.NewJwt(conf),
-		service.NewAuthService(dao),
+		service.NewValidateService(validate).Register(
+			validation.TestValidate(),
+		),
+		service.NewAuthService(dao, jwt),
 		service.NewUserService(dao),
 	)
 

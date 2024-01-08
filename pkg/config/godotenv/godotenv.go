@@ -2,6 +2,8 @@ package godotenv
 
 import (
 	"errors"
+	"github.com/eliofery/golang-angular/pkg/config"
+	"github.com/gofiber/fiber/v3/log"
 	"github.com/joho/godotenv"
 	"os"
 	"strings"
@@ -17,21 +19,27 @@ const (
 
 // GoDotEnv загрузка конфигураций из переменного окружения
 // Пример: config.Init(godotenv.New(".env"))
-type GoDotEnv struct {
+type GoDotEnv interface {
+	config.Config
+}
+
+type goDotEnv struct {
 	configName []string
 }
 
-func New(configName ...string) *GoDotEnv {
+func New(configName ...string) GoDotEnv {
+	log.Info("инициализация конфигурации goDotEnv")
+
 	if len(configName) == 0 {
 		configName = append(configName, defaultConfigName)
 	}
 
-	return &GoDotEnv{
+	return &goDotEnv{
 		configName: configName,
 	}
 }
 
-func (g *GoDotEnv) Load() error {
+func (g *goDotEnv) Init() error {
 	if err := godotenv.Load(g.configName...); err != nil {
 		return ErrNotFound
 	}
@@ -39,7 +47,7 @@ func (g *GoDotEnv) Load() error {
 	return nil
 }
 
-func (g *GoDotEnv) Get(key string) string {
+func (g *goDotEnv) Get(key string) string {
 	key = formatter(key)
 
 	return os.Getenv(key)

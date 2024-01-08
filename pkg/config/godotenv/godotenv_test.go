@@ -14,11 +14,11 @@ func TestLoad(t *testing.T) {
 
 	testCases := []testCase{
 		{
-			test:        "Успех",
+			test:        "Успех с указанием имени файла",
 			configName:  "../../../.env",
 			expectedErr: nil,
 		}, {
-			test:        "Провал",
+			test:        "Провал без указания имени файла",
 			configName:  "",
 			expectedErr: ErrNotFound,
 		},
@@ -26,8 +26,8 @@ func TestLoad(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.test, func(t *testing.T) {
-			err := New(tc.configName).Load()
-			assert.Equal(t, tc.expectedErr, err)
+			err := New(tc.configName).Init()
+			assert.ErrorIs(t, tc.expectedErr, err)
 		})
 	}
 }

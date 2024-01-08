@@ -2,6 +2,8 @@ package viperr
 
 import (
 	"errors"
+	"github.com/eliofery/golang-angular/pkg/config"
+	"github.com/gofiber/fiber/v3/log"
 	"github.com/spf13/viper"
 	"strings"
 )
@@ -17,40 +19,49 @@ const (
 	defaultConfigPath = "internal/config"
 )
 
-// Viper загрузка конфигураций из yml файлов
+// Viperr загрузка конфигураций из yml файлов
 // Пример: config.Init(viperr.New())
-type Viper struct {
+type Viperr interface {
+	config.Config
+	AddConfigType(configType string) *viperr
+	AddConfigPath(configPath ...string) *viperr
+	GetAny(key string) any
+}
+
+type viperr struct {
 	configName  string
 	configType  string
 	configPaths []string
 }
 
-func New(configName ...string) *Viper {
+func New(configName ...string) Viperr {
+	log.Info("инициализация конфигурации viperr")
+
 	name := defaultConfigName
 	if len(configName) > 0 {
 		name = configName[0]
 	}
 
-	return &Viper{
+	return &viperr{
 		configName:  name,
 		configType:  defaultConfigType,
 		configPaths: []string{defaultConfigPath},
 	}
 }
 
-func (v *Viper) AddConfigType(configType string) *Viper {
+func (v *viperr) AddConfigType(configType string) *viperr {
 	v.configType = configType
 
 	return v
 }
 
-func (v *Viper) AddConfigPath(configPath ...string) *Viper {
+func (v *viperr) AddConfigPath(configPath ...string) *viperr {
 	v.configPaths = append(v.configPaths, configPath...)
 
 	return v
 }
 
-func (v *Viper) Load() error {
+func (v *viperr) Init() error {
 	viper.SetConfigName(v.configName)
 	viper.SetConfigType(v.configType)
 	for _, configPath := range v.configPaths {
@@ -70,13 +81,13 @@ func (v *Viper) Load() error {
 	return nil
 }
 
-func (v *Viper) Get(key string) string {
+func (v *viperr) Get(key string) string {
 	key = formatter(key)
 
 	return viper.GetString(key)
 }
 
-func (v *Viper) GetAny(key string) any {
+func (v *viperr) GetAny(key string) any {
 	key = formatter(key)
 
 	return viper.Get(key)

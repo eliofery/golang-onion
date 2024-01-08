@@ -5,17 +5,19 @@ import (
 )
 
 type Config interface {
-	// Load загрузка конфигурации
-	Load() error
+	// Init загрузка конфигурации
+	Init() error
 
 	// Get получение конфигурации
 	Get(key string) string
 }
 
-// Init инициализация конфигурации
-// Пример: config.Init(viperr.New())
-func Init(config Config) (Config, error) {
-	if err := config.Load(); err != nil {
+// Load загрузка конфигурации
+// Пример: config.Load(viperr.New())
+func Load(config Config) (Config, error) {
+	log.Info("загрузка конфигурации")
+
+	if err := config.Init(); err != nil {
 		return nil, err
 	}
 
@@ -24,9 +26,7 @@ func Init(config Config) (Config, error) {
 
 // MustInit инициализация конфигурации с обработкой ошибок
 func MustInit(config Config) Config {
-	log.Info("инициализация конфигурации")
-
-	conf, err := Init(config)
+	conf, err := Load(config)
 	if err != nil {
 		log.Fatal(err)
 	}

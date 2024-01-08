@@ -4,23 +4,30 @@ import (
 	"database/sql"
 	"github.com/eliofery/golang-angular/pkg/config"
 	"github.com/eliofery/golang-angular/pkg/database"
+	"github.com/gofiber/fiber/v3/log"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 // Storage база данных sqlite
 // Пример: database.Connect(sqlite.New(config))
 // config - godotenv, viperr
-type Storage struct {
+type Storage interface {
+	database.Database
+}
+
+type storage struct {
 	Path string
 }
 
-func New(config config.Config) *Storage {
-	return &Storage{
+func New(config config.Config) Storage {
+	log.Info("инициализация базы данных Sqlite")
+
+	return &storage{
 		Path: config.Get("SQLITE_PATH"),
 	}
 }
 
-func (s *Storage) Init() (*sql.DB, error) {
+func (s *storage) Init() (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", s.Path)
 	if err != nil {
 		return nil, database.ErrConnectDB

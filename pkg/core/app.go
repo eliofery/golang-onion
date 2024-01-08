@@ -91,8 +91,6 @@ func (a *App) MustRun(ctx context.Context) {
 	case err := <-ch:
 		log.Fatalf("%s: %s", op, err)
 	case <-ctx.Done():
-		log.Info("остановка приложения")
-
 		timeout, cancel := context.WithTimeout(context.Background(), time.Second*10)
 		defer cancel()
 
@@ -100,4 +98,6 @@ func (a *App) MustRun(ctx context.Context) {
 			log.Errorf("%s: %s", op, err)
 		}
 	}
+
+	log.Info("остановка приложения")
 }

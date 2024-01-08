@@ -2,36 +2,29 @@ package controller
 
 import (
 	"errors"
-	"github.com/eliofery/golang-angular/internal/model"
 	"github.com/eliofery/golang-angular/internal/service"
-	"github.com/eliofery/golang-angular/pkg/utils"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/log"
 )
 
 // ServiceController обработчик маршрутов
 type ServiceController struct {
-	validator model.Validate
-	jwt       utils.Jwt
-
-	authService service.AuthService
-	userService service.UserService
+	validateService service.ValidateService
+	authService     service.AuthService
+	userService     service.UserService
 }
 
 func NewServiceController(
-	validator model.Validate,
-	jwt utils.Jwt,
-
+	validateService service.ValidateService,
 	authService service.AuthService,
 	userService service.UserService,
 ) ServiceController {
-	log.Info("инициализация ServiceController")
-	return ServiceController{
-		validator: validator,
-		jwt:       jwt,
+	log.Info("инициализация сервисов контроллера")
 
-		authService: authService,
-		userService: userService,
+	return ServiceController{
+		validateService: validateService,
+		authService:     authService,
+		userService:     userService,
 	}
 }
 
@@ -39,10 +32,10 @@ func NewServiceController(
 func (c *ServiceController) bodyValidate(ctx fiber.Ctx, data any) error {
 	if err := ctx.Bind().Body(&data); err != nil {
 		ctx.Status(fiber.StatusBadRequest)
-		return err
+		return errors.New("некорректный json формат")
 	}
 
-	if errMessages := c.validator.Validation(data); len(errMessages) > 0 {
+	if errMessages := c.validateService.ValidateData(data); len(errMessages) > 0 {
 		ctx.Status(fiber.StatusBadRequest)
 		return errors.Join(errMessages...)
 	}
