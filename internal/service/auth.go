@@ -13,7 +13,7 @@ import (
 
 // AuthService содержит логику авторизации пользователя
 type AuthService interface {
-	GetUserIdFromToken(ctx fiber.Ctx) (userId int)
+	GetUserIdFromToken(ctx fiber.Ctx) (userId *int)
 	Register(ctx fiber.Ctx, user dto.UserCreate) (token string, err error)
 	Auth(ctx fiber.Ctx, user dto.UserAuth) (token string, err error)
 	Logout(ctx fiber.Ctx, userId int) error
@@ -30,18 +30,18 @@ func NewAuthService(dao repository.DAO, jwt utils.TokenManager) AuthService {
 }
 
 // GetUserIdFromToken получение идентификатора пользователя из токена
-func (s *authService) GetUserIdFromToken(ctx fiber.Ctx) int {
+func (s *authService) GetUserIdFromToken(ctx fiber.Ctx) *int {
 	cb, ok := ctx.Locals(middleware.IssuerKey).(func(cb fiber.Ctx) (int, error))
 	if !ok {
-		return 0
+		return nil
 	}
 
 	userId, err := cb(ctx)
 	if err != nil {
-		return 0
+		return nil
 	}
 
-	return userId
+	return &userId
 }
 
 // Register регистрация и авторизация пользователя

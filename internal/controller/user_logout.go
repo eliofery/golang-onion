@@ -6,7 +6,7 @@ import (
 
 // Logout выход пользователя из системы
 func (c *ServiceController) Logout(ctx fiber.Ctx) error {
-	userId := c.authService.GetUserIdFromToken(ctx)
+	userId := *c.authService.GetUserIdFromToken(ctx)
 
 	if err := c.authService.Logout(ctx, userId); err != nil {
 		ctx.Status(fiber.StatusInternalServerError)

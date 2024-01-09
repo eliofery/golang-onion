@@ -13,5 +13,7 @@ func (r *Router) userRoute(app *fiber.App) {
 	user := api.Group("/user", middleware.IsAuth)
 	user.Get("/", r.handler.GetUser)
 	user.Get("/:id", r.handler.GetUser)
+	user.Put("/update", r.handler.UpdateUser)
+	user.Put("/:id/update", r.handler.UpdateUser)
 	user.Post("/create", r.handler.CreateUser)
 }

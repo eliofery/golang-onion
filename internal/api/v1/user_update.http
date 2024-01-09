@@ -1,0 +1,25 @@
+### Обновление данных авторизованного пользователя
+PUT http://127.0.0.1:3000/api/v1/user/update
+content-type: application/json
+authorization: token
+
+# Все параметры можно опускать кроме email
+{
+    "last_name": "Marli",
+    "email": "newuser@company.org",
+    "password": "1234",
+    "password_confirm": "1234"
+}
+
+### Обновление данных пользователя по id
+PUT http://127.0.0.1:3000/api/v1/user/23/update
+content-type: application/json
+authorization: token
+
+# Все параметры можно опускать кроме email
+{
+    "last_name": "Marli 15",
+    "email": "root2@si1te.org",
+    "password": "321",
+    "password_confirm": "321"
+}

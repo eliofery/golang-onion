@@ -7,10 +7,6 @@ import (
 	"github.com/gofiber/fiber/v3/log"
 )
 
-var (
-	ErrNotAllowed = errors.New("не допустимое действие")
-)
-
 // ServiceController обработчик маршрутов
 type ServiceController struct {
 	validateService service.ValidateService

@@ -9,9 +9,7 @@ import (
 func (r *Router) authRoute(app *fiber.App) {
 	api := app.Group(apiV1)
 
+	api.Post("/signup", r.handler.SignUp, middleware.IsGuest)
+	api.Post("/signin", r.handler.SignIn, middleware.IsGuest)
 	api.Post("/logout", r.handler.Logout, middleware.IsAuth)
-
-	guest := api.Group("/", middleware.IsGuest)
-	guest.Post("/signup", r.handler.SignUp)
-	guest.Post("/signin", r.handler.SignIn)
 }

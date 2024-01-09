@@ -9,7 +9,7 @@ import (
 func (c *ServiceController) GetUser(ctx fiber.Ctx) error {
 	userId, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil || userId == 0 {
-		userId = c.authService.GetUserIdFromToken(ctx)
+		userId = *c.authService.GetUserIdFromToken(ctx)
 	}
 
 	user, err := c.userService.GetById(userId)

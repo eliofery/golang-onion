@@ -15,6 +15,7 @@ type UserService interface {
 	GetById(userId int) (user *model.User, err error)
 	Create(user dto.UserCreate) (int, error)
 	GetAll(page int) (*dto.UserAll, error)
+	Update(user dto.UserUpdate) (*model.User, error)
 }
 
 type userService struct {
@@ -81,4 +82,22 @@ func (s *userService) GetAll(page int) (*dto.UserAll, error) {
 	result.Meta.LastPage = math.Ceil(float64(total) / float64(limit))
 
 	return &result, err
+}
+
+// Update обновить пользователя
+func (s *userService) Update(user dto.UserUpdate) (*model.User, error) {
+	if user.Password != "" {
+		passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return nil, err
+		}
+		user.Password = string(passwordHash)
+	}
+
+	updateUser, err := s.dao.NewUserQuery().Update(user)
+	if err != nil {
+		return nil, err
+	}
+
+	return updateUser, nil
 }

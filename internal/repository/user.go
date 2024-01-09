@@ -3,10 +3,12 @@ package repository
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"github.com/eliofery/golang-angular/internal/dto"
 	"github.com/eliofery/golang-angular/internal/model"
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
+	"strings"
 )
 
 // UserQuery содержит запросы в базу данных для манипуляции с пользователями
@@ -16,6 +18,7 @@ type UserQuery interface {
 	GetById(userId int) (user *model.User, err error)
 	GetAll(limit, offset int) ([]model.User, error)
 	GetTotalCount() (int, error)
+	Update(user dto.UserUpdate) (*model.User, error)
 }
 
 type userQuery struct {
@@ -110,4 +113,52 @@ func (q *userQuery) GetTotalCount() (int, error) {
 	}
 
 	return count, nil
+}
+
+// Update обновление данных пользователя
+func (q *userQuery) Update(user dto.UserUpdate) (*model.User, error) {
+	var (
+		setClauses []string
+		args       []any
+	)
+
+	if user.FirstName != "" {
+		setClauses = append(setClauses, fmt.Sprintf("first_name = $%d", len(args)+1))
+		args = append(args, user.FirstName)
+	}
+
+	if user.LastName != "" {
+		setClauses = append(setClauses, fmt.Sprintf("last_name = $%d", len(args)+1))
+		args = append(args, user.LastName)
+	}
+
+	if user.Email != "" {
+		setClauses = append(setClauses, fmt.Sprintf("email = $%d", len(args)+1))
+		args = append(args, user.Email)
+	}
+
+	if user.Password != "" {
+		setClauses = append(setClauses, fmt.Sprintf("password_hash = $%d", len(args)+1))
+		args = append(args, user.Password)
+	}
+
+	if len(setClauses) == 0 {
+		return nil, errors.New("нет данных для обновления")
+	}
+
+	setClause := strings.Join(setClauses, ", ")
+	query := fmt.Sprintf("UPDATE users SET %s WHERE id = $%d RETURNING id, first_name, last_name, email", setClause, len(args)+1)
+	args = append(args, user.ID)
+
+	var updateUser model.User
+	err := q.db.QueryRow(query, args...).Scan(&updateUser.ID, &updateUser.FirstName, &updateUser.LastName, &updateUser.Email)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation {
+			return nil, errors.New("пользователь с таким email уже существует")
+		}
+		return nil, err
+	}
+
+	return &updateUser, nil
 }

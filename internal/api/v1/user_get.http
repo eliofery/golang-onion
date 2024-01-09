@@ -3,5 +3,5 @@ GET http://127.0.0.1:3000/api/v1/user
 authorization: token
 
 ### Получение данных пользователя по id
-GET http://127.0.0.1:3000/api/v1/user/1
+GET http://127.0.0.1:3000/api/v1/user/4
 authorization: token
