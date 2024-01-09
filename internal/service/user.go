@@ -5,6 +5,8 @@ import (
 	"github.com/eliofery/golang-angular/internal/model"
 	"github.com/eliofery/golang-angular/internal/repository"
 	"github.com/eliofery/golang-angular/pkg/config"
+	"github.com/eliofery/golang-angular/pkg/utils"
+	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/log"
 	"golang.org/x/crypto/bcrypt"
 	"math"
@@ -16,16 +18,22 @@ type UserService interface {
 	Create(user dto.UserCreate) (int, error)
 	GetAll(page int) (*dto.UserAll, error)
 	Update(user dto.UserUpdate) (*model.User, error)
+	Delete(ctx fiber.Ctx, userId int) error
 }
 
 type userService struct {
 	dao  repository.DAO
 	conf config.Config
+	jwt  utils.TokenManager
 }
 
-func NewUserService(dao repository.DAO, conf config.Config) UserService {
+func NewUserService(dao repository.DAO, conf config.Config, jwt utils.TokenManager) UserService {
 	log.Info("инициализация сервиса пользователей")
-	return &userService{dao: dao, conf: conf}
+	return &userService{
+		dao:  dao,
+		conf: conf,
+		jwt:  jwt,
+	}
 }
 
 // GetById получить пользователя по id
@@ -100,4 +108,20 @@ func (s *userService) Update(user dto.UserUpdate) (*model.User, error) {
 	}
 
 	return updateUser, nil
+}
+
+// Delete удаление пользователя
+func (s *userService) Delete(ctx fiber.Ctx, userId int) error {
+	if err := s.dao.NewUserQuery().Delete(userId); err != nil {
+		return err
+	}
+
+	err := s.dao.NewSessionQuery().DeleteByUserId(userId)
+	if err != nil {
+		return err
+	}
+
+	s.jwt.RemoveCookieToken(ctx)
+
+	return nil
 }

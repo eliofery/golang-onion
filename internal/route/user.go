@@ -15,5 +15,7 @@ func (r *Router) userRoute(app *fiber.App) {
 	user.Get("/:id", r.handler.GetUser)
 	user.Put("/update", r.handler.UpdateUser)
 	user.Put("/:id/update", r.handler.UpdateUser)
+	user.Delete("/delete", r.handler.UserDelete)
+	user.Delete("/:id/delete", r.handler.UserDelete)
 	user.Post("/create", r.handler.CreateUser)
 }

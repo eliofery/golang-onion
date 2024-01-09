@@ -1,0 +1,7 @@
+### Удаление данных авторизованного пользователя
+DELETE http://127.0.0.1:3000/api/v1/user/delete
+authorization: token
+
+### Удаление данных пользователя по id
+DELETE http://127.0.0.1:3000/api/v1/user/1/delete
+authorization: token

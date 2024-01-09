@@ -19,6 +19,7 @@ type UserQuery interface {
 	GetAll(limit, offset int) ([]model.User, error)
 	GetTotalCount() (int, error)
 	Update(user dto.UserUpdate) (*model.User, error)
+	Delete(userId int) error
 }
 
 type userQuery struct {
@@ -161,4 +162,14 @@ func (q *userQuery) Update(user dto.UserUpdate) (*model.User, error) {
 	}
 
 	return &updateUser, nil
+}
+
+// Delete удаление данных пользователя
+func (q *userQuery) Delete(userId int) error {
+	query := "DELETE FROM users WHERE id = $1"
+	if _, err := q.db.Exec(query, userId); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -34,7 +34,7 @@ func main() {
 			validation.TestValidate(),
 		),
 		service.NewAuthService(dao, jwt),
-		service.NewUserService(dao, conf),
+		service.NewUserService(dao, conf, jwt),
 	)
 
 	// Запуск приложения
