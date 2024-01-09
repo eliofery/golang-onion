@@ -1,12 +1,13 @@
 package service
 
 import (
+	"github.com/eliofery/golang-angular/internal/model"
 	"github.com/eliofery/golang-angular/internal/repository"
 	"github.com/gofiber/fiber/v3/log"
 )
 
 type UserService interface {
-	GetUser()
+	GetUser(userId int) (user *model.User, err error)
 }
 
 type userService struct {
@@ -18,4 +19,11 @@ func NewUserService(dao repository.DAO) UserService {
 	return &userService{dao: dao}
 }
 
-func (u *userService) GetUser() {}
+func (u *userService) GetUser(userId int) (*model.User, error) {
+	user, err := u.dao.NewUserQuery().GetUserById(userId)
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
+}

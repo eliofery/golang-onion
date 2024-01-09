@@ -7,6 +7,10 @@ import (
 
 // SignUp авторизация нового пользователя
 func (c *ServiceController) SignUp(ctx fiber.Ctx) error {
+	if userId := c.authService.GetUserIdFromToken(ctx); userId != 0 {
+		return ErrNotAllowed
+	}
+
 	var user dto.UserCreate
 	if err := c.bodyValidate(ctx, &user); err != nil {
 		return err

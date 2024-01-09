@@ -31,7 +31,7 @@ func NewAuthService(dao repository.DAO, jwt utils.TokenManager) AuthService {
 }
 
 // GetUserIdFromToken получение идентификатора пользователя из токена
-func (s *authService) GetUserIdFromToken(ctx fiber.Ctx) (userId int) {
+func (s *authService) GetUserIdFromToken(ctx fiber.Ctx) int {
 	cb, ok := ctx.Locals(middleware.IssuerKey).(func(cb fiber.Ctx) (int, error))
 	if !ok {
 		return 0
@@ -46,14 +46,14 @@ func (s *authService) GetUserIdFromToken(ctx fiber.Ctx) (userId int) {
 }
 
 // Register регистрация пользователя
-func (s *authService) Register(user dto.UserCreate) (userId int, err error) {
+func (s *authService) Register(user dto.UserCreate) (int, error) {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return 0, err
 	}
 
 	user.Password = string(passwordHash)
-	userId, err = s.dao.NewUserQuery().Save(user)
+	userId, err := s.dao.NewUserQuery().Save(user)
 	if err != nil {
 		return 0, err
 	}
@@ -62,13 +62,13 @@ func (s *authService) Register(user dto.UserCreate) (userId int, err error) {
 }
 
 // RegisterAndAuth регистрация и авторизация пользователя
-func (s *authService) RegisterAndAuth(ctx fiber.Ctx, user dto.UserCreate) (token string, err error) {
+func (s *authService) RegisterAndAuth(ctx fiber.Ctx, user dto.UserCreate) (string, error) {
 	userId, err := s.Register(user)
 	if err != nil {
 		return "", err
 	}
 
-	token, err = s.jwt.GenerateToken(userId)
+	token, err := s.jwt.GenerateToken(userId)
 	if err != nil {
 		return "", err
 	}
@@ -83,7 +83,7 @@ func (s *authService) RegisterAndAuth(ctx fiber.Ctx, user dto.UserCreate) (token
 }
 
 // Auth авторизация пользователя
-func (s *authService) Auth(ctx fiber.Ctx, user dto.UserAuth) (token string, err error) {
+func (s *authService) Auth(ctx fiber.Ctx, user dto.UserAuth) (string, error) {
 	findUser, err := s.dao.NewUserQuery().GetUserByEmail(user.Email)
 	if err != nil {
 		return "", err
@@ -94,7 +94,7 @@ func (s *authService) Auth(ctx fiber.Ctx, user dto.UserAuth) (token string, err 
 		return "", errors.New("не верный логин или пароль")
 	}
 
-	token, err = s.jwt.GenerateToken(findUser.ID)
+	token, err := s.jwt.GenerateToken(findUser.ID)
 	if err != nil {
 		return "", err
 	}
