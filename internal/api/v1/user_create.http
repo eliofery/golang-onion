@@ -1,7 +1,11 @@
+### Создание пользователя
 POST http://127.0.0.1:3000/api/v1/user/create
 content-type: application/json
 authorization: token
 
+# Необязательные поля
+# "first_name": "Bob",
+# "last_name": "Marley",
 {
     "first_name": "Bob",
     "last_name": "Marley",

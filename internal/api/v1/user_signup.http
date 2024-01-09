@@ -1,6 +1,10 @@
+### Регистрация
 POST http://127.0.0.1:3000/api/v1/signup
 content-type: application/json
 
+# Необязательные поля
+# "first_name": "Bob",
+# "last_name": "Marley",
 {
     "email": "root@site.org",
     "password": "123",

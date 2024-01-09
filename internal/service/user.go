@@ -4,22 +4,27 @@ import (
 	"github.com/eliofery/golang-angular/internal/dto"
 	"github.com/eliofery/golang-angular/internal/model"
 	"github.com/eliofery/golang-angular/internal/repository"
+	"github.com/eliofery/golang-angular/pkg/config"
 	"github.com/gofiber/fiber/v3/log"
 	"golang.org/x/crypto/bcrypt"
+	"math"
+	"strconv"
 )
 
 type UserService interface {
 	GetById(userId int) (user *model.User, err error)
 	Create(user dto.UserCreate) (int, error)
+	GetAll(page int) (*dto.UserAll, error)
 }
 
 type userService struct {
-	dao repository.DAO
+	dao  repository.DAO
+	conf config.Config
 }
 
-func NewUserService(dao repository.DAO) UserService {
+func NewUserService(dao repository.DAO, conf config.Config) UserService {
 	log.Info("инициализация сервиса пользователей")
-	return &userService{dao: dao}
+	return &userService{dao: dao, conf: conf}
 }
 
 // GetById получить пользователя по id
@@ -46,4 +51,34 @@ func (s *userService) Create(user dto.UserCreate) (int, error) {
 	}
 
 	return userId, nil
+}
+
+// GetAll получить всех пользователей
+func (s *userService) GetAll(page int) (*dto.UserAll, error) {
+	const defaultLimit = 10
+
+	limit, err := strconv.Atoi(s.conf.Get("PAGINATION_LIMIT"))
+	if err != nil || limit <= 0 {
+		limit = defaultLimit
+	}
+
+	offset := (page - 1) * limit
+
+	users, err := s.dao.NewUserQuery().GetAll(limit, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	total, err := s.dao.NewUserQuery().GetTotalCount()
+	if err != nil {
+		return nil, err
+	}
+
+	var result dto.UserAll
+	result.Users = users
+	result.Meta.Total = total
+	result.Meta.Page = page
+	result.Meta.LastPage = math.Ceil(float64(total) / float64(limit))
+
+	return &result, err
 }

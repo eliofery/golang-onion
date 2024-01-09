@@ -8,6 +8,8 @@ import (
 func (r *Router) userRoute(app *fiber.App) {
 	api := app.Group(apiV1)
 
+	api.Get("/users", r.handler.GetUserAll, middleware.IsAuth)
+
 	user := api.Group("/user", middleware.IsAuth)
 	user.Get("/", r.handler.GetUser)
 	user.Get("/:id", r.handler.GetUser)

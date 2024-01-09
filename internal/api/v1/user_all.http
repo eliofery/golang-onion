@@ -1,0 +1,7 @@
+### Получение всех пользователей
+GET http://127.0.0.1:3000/api/v1/users
+authorization: token
+
+### Получение всех пользователей страница 2
+GET http://127.0.0.1:3000/api/v1/users?page=2
+authorization: token

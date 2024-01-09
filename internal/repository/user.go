@@ -14,6 +14,8 @@ type UserQuery interface {
 	Create(user dto.UserCreate) (userId int, err error)
 	GetByEmail(email string) (user *model.User, err error)
 	GetById(userId int) (user *model.User, err error)
+	GetAll(limit, offset int) ([]model.User, error)
+	GetTotalCount() (int, error)
 }
 
 type userQuery struct {
@@ -67,4 +69,45 @@ func (q *userQuery) GetById(userId int) (*model.User, error) {
 	}
 
 	return &user, nil
+}
+
+// GetAll получить всех пользователей
+func (q *userQuery) GetAll(limit, offset int) ([]model.User, error) {
+	query := "SELECT id, first_name, last_name, email FROM users LIMIT $1 OFFSET $2"
+	rows, err := q.db.Query(query, limit, offset)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.New("пользователи не найдены")
+		}
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []model.User
+	for rows.Next() {
+		var user model.User
+		if err = rows.Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email); err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+// GetTotalCount получить общее количество пользователей
+func (q *userQuery) GetTotalCount() (int, error) {
+	query := "SELECT COUNT(*) FROM users"
+
+	var count int
+	err := q.db.QueryRow(query).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }
