@@ -12,7 +12,7 @@ func (c *ServiceController) CreateUser(ctx fiber.Ctx) error {
 		return err
 	}
 
-	id, err := c.authService.Register(user)
+	id, err := c.userService.Create(user)
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError)
 		return err

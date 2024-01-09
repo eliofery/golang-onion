@@ -6,7 +6,7 @@ import "github.com/gofiber/fiber/v3"
 func (c *ServiceController) GetUser(ctx fiber.Ctx) error {
 	userId := c.authService.GetUserIdFromToken(ctx)
 
-	user, err := c.userService.GetUser(userId)
+	user, err := c.userService.GetById(userId)
 	if err != nil {
 		return err
 	}

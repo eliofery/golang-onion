@@ -11,17 +11,17 @@ import (
 
 // UserQuery содержит запросы в базу данных для манипуляции с пользователями
 type UserQuery interface {
-	Save(user dto.UserCreate) (userId int, err error)
-	GetUserByEmail(email string) (user *model.User, err error)
-	GetUserById(userId int) (user *model.User, err error)
+	Create(user dto.UserCreate) (userId int, err error)
+	GetByEmail(email string) (user *model.User, err error)
+	GetById(userId int) (user *model.User, err error)
 }
 
 type userQuery struct {
 	db *sql.DB
 }
 
-// Save создание пользователя
-func (q *userQuery) Save(user dto.UserCreate) (int, error) {
+// Create создание пользователя
+func (q *userQuery) Create(user dto.UserCreate) (int, error) {
 	var userId int
 
 	query := "INSERT INTO users (first_name, last_name, email, password_hash) VALUES ($1, $2, $3, $4) RETURNING id"
@@ -37,8 +37,8 @@ func (q *userQuery) Save(user dto.UserCreate) (int, error) {
 	return userId, nil
 }
 
-// GetUserByEmail получить пользователя по email
-func (q *userQuery) GetUserByEmail(email string) (*model.User, error) {
+// GetByEmail получить пользователя по email
+func (q *userQuery) GetByEmail(email string) (*model.User, error) {
 	var user model.User
 
 	query := "SELECT id, password_hash FROM users WHERE email = $1"
@@ -53,8 +53,8 @@ func (q *userQuery) GetUserByEmail(email string) (*model.User, error) {
 	return &user, nil
 }
 
-// GetUserById получить пользователя по id
-func (q *userQuery) GetUserById(userId int) (*model.User, error) {
+// GetById получить пользователя по id
+func (q *userQuery) GetById(userId int) (*model.User, error) {
 	var user model.User
 
 	query := "SELECT id, first_name, last_name, email FROM users WHERE id = $1"

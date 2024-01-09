@@ -7,16 +7,12 @@ import (
 
 // SignUp авторизация нового пользователя
 func (c *ServiceController) SignUp(ctx fiber.Ctx) error {
-	if userId := c.authService.GetUserIdFromToken(ctx); userId != 0 {
-		return ErrNotAllowed
-	}
-
 	var user dto.UserCreate
 	if err := c.bodyValidate(ctx, &user); err != nil {
 		return err
 	}
 
-	token, err := c.authService.RegisterAndAuth(ctx, user)
+	token, err := c.authService.Register(ctx, user)
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError)
 		return err

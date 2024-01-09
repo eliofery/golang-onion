@@ -14,8 +14,7 @@ import (
 // AuthService содержит логику авторизации пользователя
 type AuthService interface {
 	GetUserIdFromToken(ctx fiber.Ctx) (userId int)
-	Register(user dto.UserCreate) (userId int, err error)
-	RegisterAndAuth(ctx fiber.Ctx, user dto.UserCreate) (token string, err error)
+	Register(ctx fiber.Ctx, user dto.UserCreate) (token string, err error)
 	Auth(ctx fiber.Ctx, user dto.UserAuth) (token string, err error)
 	Logout(ctx fiber.Ctx, userId int) error
 }
@@ -45,25 +44,15 @@ func (s *authService) GetUserIdFromToken(ctx fiber.Ctx) int {
 	return userId
 }
 
-// Register регистрация пользователя
-func (s *authService) Register(user dto.UserCreate) (int, error) {
+// Register регистрация и авторизация пользователя
+func (s *authService) Register(ctx fiber.Ctx, user dto.UserCreate) (string, error) {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
 	user.Password = string(passwordHash)
-	userId, err := s.dao.NewUserQuery().Save(user)
-	if err != nil {
-		return 0, err
-	}
-
-	return userId, nil
-}
-
-// RegisterAndAuth регистрация и авторизация пользователя
-func (s *authService) RegisterAndAuth(ctx fiber.Ctx, user dto.UserCreate) (string, error) {
-	userId, err := s.Register(user)
+	userId, err := s.dao.NewUserQuery().Create(user)
 	if err != nil {
 		return "", err
 	}
@@ -73,7 +62,7 @@ func (s *authService) RegisterAndAuth(ctx fiber.Ctx, user dto.UserCreate) (strin
 		return "", err
 	}
 
-	if err = s.dao.NewSessionQuery().Save(userId, token); err != nil {
+	if err = s.dao.NewSessionQuery().Create(userId, token); err != nil {
 		return "", err
 	}
 
@@ -84,7 +73,7 @@ func (s *authService) RegisterAndAuth(ctx fiber.Ctx, user dto.UserCreate) (strin
 
 // Auth авторизация пользователя
 func (s *authService) Auth(ctx fiber.Ctx, user dto.UserAuth) (string, error) {
-	findUser, err := s.dao.NewUserQuery().GetUserByEmail(user.Email)
+	findUser, err := s.dao.NewUserQuery().GetByEmail(user.Email)
 	if err != nil {
 		return "", err
 	}
@@ -99,7 +88,7 @@ func (s *authService) Auth(ctx fiber.Ctx, user dto.UserAuth) (string, error) {
 		return "", err
 	}
 
-	if err = s.dao.NewSessionQuery().Save(findUser.ID, token); err != nil {
+	if err = s.dao.NewSessionQuery().Create(findUser.ID, token); err != nil {
 		return "", err
 	}
 

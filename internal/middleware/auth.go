@@ -13,13 +13,15 @@ type key string
 
 const IssuerKey key = "issuer"
 
-var ErrAccessDenied = errors.New("недостаточно прав для выполнения данного действия")
+var (
+	ErrNotAllowed = errors.New("не допустимое действие")
+)
 
 // SetUserIdFromToken добавление ID авторизованного пользователя в контекст
 func SetUserIdFromToken(dao repository.DAO, tokenManager utils.TokenManager) fiber.Handler {
 	return func(ctx fiber.Ctx) error {
 		ctx.Locals(IssuerKey, func(c fiber.Ctx) (int, error) {
-			message := ErrAccessDenied
+			message := ErrNotAllowed
 
 			cookieToken := c.Cookies(utils.CookieTokenName)
 			authToken := c.Get("Authorization")
@@ -44,7 +46,7 @@ func SetUserIdFromToken(dao repository.DAO, tokenManager utils.TokenManager) fib
 				return 0, message
 			}
 
-			if err := dao.NewSessionQuery().VerifyToken(tokenString); err != nil {
+			if err := dao.NewSessionQuery().GetByToken(tokenString); err != nil {
 				return deleteToken()
 			}
 
@@ -66,16 +68,30 @@ func SetUserIdFromToken(dao repository.DAO, tokenManager utils.TokenManager) fib
 	}
 }
 
-// IsAuth проверка авторизации пользователя
+// IsAuth доступ только для авторизованных пользователей
 func IsAuth(ctx fiber.Ctx) error {
 	cb, ok := ctx.Locals(IssuerKey).(func(cb fiber.Ctx) (int, error))
 	if !ok {
-		return ErrAccessDenied
+		return ErrNotAllowed
 	}
 
 	if _, err := cb(ctx); err != nil {
-		return ErrAccessDenied
+		return ErrNotAllowed
 	}
 
 	return ctx.Next()
+}
+
+// IsGuest доступ только для гостей
+func IsGuest(ctx fiber.Ctx) error {
+	cb, ok := ctx.Locals(IssuerKey).(func(cb fiber.Ctx) (int, error))
+	if !ok {
+		return ctx.Next()
+	}
+
+	if _, err := cb(ctx); err != nil {
+		return ctx.Next()
+	}
+
+	return ErrNotAllowed
 }

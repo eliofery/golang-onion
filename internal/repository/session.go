@@ -6,18 +6,18 @@ import (
 
 // SessionQuery содержит запросы в базу данных для манипуляции с пользователями
 type SessionQuery interface {
-	Save(userId int, token string) error
+	Create(userId int, token string) error
 	DeleteByToken(token string) error
 	DeleteByUserId(userId int) error
-	VerifyToken(token string) error
+	GetByToken(token string) error
 }
 
 type sessionQuery struct {
 	db *sql.DB
 }
 
-// Save сохранение токена
-func (q *sessionQuery) Save(userId int, token string) error {
+// Create создание токена
+func (q *sessionQuery) Create(userId int, token string) error {
 	query := "INSERT INTO sessions (token, user_id) VALUES ($1, $2)"
 	_, err := q.db.Exec(query, token, userId)
 	if err != nil {
@@ -49,8 +49,8 @@ func (q *sessionQuery) DeleteByUserId(userId int) error {
 	return nil
 }
 
-// VerifyToken проверка токена на наличие в БД
-func (q *sessionQuery) VerifyToken(token string) error {
+// GetByToken получение сессии по токену
+func (q *sessionQuery) GetByToken(token string) error {
 	query := "SELECT id FROM sessions WHERE token = $1"
 	_, err := q.db.Exec(query, token)
 	if err != nil {
