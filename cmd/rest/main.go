@@ -35,6 +35,7 @@ func main() {
 		),
 		service.NewAuthService(dao, jwt),
 		service.NewUserService(dao, conf, jwt),
+		service.NewRoleService(dao, conf),
 	)
 
 	// Запуск приложения

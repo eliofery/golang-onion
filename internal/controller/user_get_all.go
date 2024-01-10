@@ -5,8 +5,8 @@ import (
 	"strconv"
 )
 
-// GetUserAll получение данных пользователя
-func (c *ServiceController) GetUserAll(ctx fiber.Ctx) error {
+// GetUsers получение данных пользователя
+func (c *ServiceController) GetUsers(ctx fiber.Ctx) error {
 	page, _ := strconv.Atoi(ctx.Query("page", "1"))
 
 	data, err := c.userService.GetAll(page)

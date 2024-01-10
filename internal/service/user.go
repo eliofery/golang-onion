@@ -22,17 +22,17 @@ type UserService interface {
 }
 
 type userService struct {
-	dao  repository.DAO
-	conf config.Config
-	jwt  utils.TokenManager
+	dao          repository.DAO
+	conf         config.Config
+	tokenManager utils.TokenManager
 }
 
 func NewUserService(dao repository.DAO, conf config.Config, jwt utils.TokenManager) UserService {
 	log.Info("инициализация сервиса пользователей")
 	return &userService{
-		dao:  dao,
-		conf: conf,
-		jwt:  jwt,
+		dao:          dao,
+		conf:         conf,
+		tokenManager: jwt,
 	}
 }
 
@@ -121,7 +121,7 @@ func (s *userService) Delete(ctx fiber.Ctx, userId int) error {
 		return err
 	}
 
-	s.jwt.RemoveCookieToken(ctx)
+	s.tokenManager.RemoveCookieToken(ctx)
 
 	return nil
 }

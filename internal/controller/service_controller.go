@@ -12,12 +12,14 @@ type ServiceController struct {
 	validateService service.ValidateService
 	authService     service.AuthService
 	userService     service.UserService
+	roleService     service.RoleService
 }
 
 func NewServiceController(
 	validateService service.ValidateService,
 	authService service.AuthService,
 	userService service.UserService,
+	roleService service.RoleService,
 ) ServiceController {
 	log.Info("инициализация сервисов контроллера")
 
@@ -25,6 +27,7 @@ func NewServiceController(
 		validateService: validateService,
 		authService:     authService,
 		userService:     userService,
+		roleService:     roleService,
 	}
 }
 

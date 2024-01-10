@@ -20,13 +20,13 @@ type AuthService interface {
 }
 
 type authService struct {
-	dao repository.DAO
-	jwt utils.TokenManager
+	dao          repository.DAO
+	tokenManager utils.TokenManager
 }
 
 func NewAuthService(dao repository.DAO, jwt utils.TokenManager) AuthService {
 	log.Info("инициализация сервиса авторизации")
-	return &authService{dao: dao, jwt: jwt}
+	return &authService{dao: dao, tokenManager: jwt}
 }
 
 // GetUserIdFromToken получение идентификатора пользователя из токена
@@ -57,7 +57,7 @@ func (s *authService) Register(ctx fiber.Ctx, user dto.UserCreate) (string, erro
 		return "", err
 	}
 
-	token, err := s.jwt.GenerateToken(userId)
+	token, err := s.tokenManager.GenerateToken(userId)
 	if err != nil {
 		return "", err
 	}
@@ -66,7 +66,7 @@ func (s *authService) Register(ctx fiber.Ctx, user dto.UserCreate) (string, erro
 		return "", err
 	}
 
-	s.jwt.SetCookieToken(ctx, token)
+	s.tokenManager.SetCookieToken(ctx, token)
 
 	return token, nil
 }
@@ -83,7 +83,7 @@ func (s *authService) Auth(ctx fiber.Ctx, user dto.UserAuth) (string, error) {
 		return "", errors.New("не верный логин или пароль")
 	}
 
-	token, err := s.jwt.GenerateToken(findUser.ID)
+	token, err := s.tokenManager.GenerateToken(findUser.ID)
 	if err != nil {
 		return "", err
 	}
@@ -92,7 +92,7 @@ func (s *authService) Auth(ctx fiber.Ctx, user dto.UserAuth) (string, error) {
 		return "", err
 	}
 
-	s.jwt.SetCookieToken(ctx, token)
+	s.tokenManager.SetCookieToken(ctx, token)
 
 	return token, nil
 }
@@ -104,7 +104,7 @@ func (s *authService) Logout(ctx fiber.Ctx, userId int) error {
 		return err
 	}
 
-	s.jwt.RemoveCookieToken(ctx)
+	s.tokenManager.RemoveCookieToken(ctx)
 
 	return nil
 }

@@ -9,6 +9,7 @@ import (
 type DAO interface {
 	NewUserQuery() UserQuery
 	NewSessionQuery() SessionQuery
+	NewRoleQuery() RoleQuery
 }
 
 type dao struct {
@@ -28,4 +29,9 @@ func (d *dao) NewUserQuery() UserQuery {
 // NewSessionQuery запросы в базу данных для сессий
 func (d *dao) NewSessionQuery() SessionQuery {
 	return &sessionQuery{db: d.db}
+}
+
+// NewRoleQuery запросы в базу данных для ролей
+func (d *dao) NewRoleQuery() RoleQuery {
+	return &roleQuery{db: d.db}
 }

@@ -25,4 +25,5 @@ func NewRouter(handler controller.ServiceController) core.Route {
 func (r *Router) Register(app *fiber.App) {
 	r.userRoute(app)
 	r.authRoute(app)
+	r.roleRoute(app)
 }
