@@ -1,0 +1,8 @@
+### Создание пользователя
+POST http://127.0.0.1:3000/api/v1/role/create
+content-type: application/json
+authorization: token
+
+{
+    "name": "Новая роль"
+}

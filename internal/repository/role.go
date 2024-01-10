@@ -16,6 +16,7 @@ type RoleQuery interface {
 	GetById(roleId int) (role *model.Role, err error)
 	Update(role dto.Role) (updateRole *model.Role, err error)
 	Delete(roleId int) error
+	Create(user dto.Role) (roleId int, err error)
 }
 
 type roleQuery struct {
@@ -116,4 +117,21 @@ func (q *roleQuery) Delete(roleId int) error {
 	}
 
 	return nil
+}
+
+// Create создание пользователя
+func (q *roleQuery) Create(user dto.Role) (int, error) {
+	var roleId int
+
+	query := "INSERT INTO roles (name) VALUES ($1) RETURNING id"
+	err := q.db.QueryRow(query, user.Name).Scan(&roleId)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation {
+			return 0, errors.New("роль уже существует")
+		}
+		return 0, err
+	}
+
+	return roleId, nil
 }

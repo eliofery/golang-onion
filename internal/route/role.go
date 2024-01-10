@@ -14,5 +14,5 @@ func (r *Router) roleRoute(app *fiber.App) {
 	user.Get("/:id", r.handler.GetRole)
 	user.Put("/:id/update", r.handler.UpdateRole)
 	user.Delete("/:id/delete", r.handler.DeleteRole)
-	//user.Post("/create", r.handler.CreateUser)
+	user.Post("/create", r.handler.CreateRole)
 }
