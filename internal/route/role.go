@@ -13,7 +13,6 @@ func (r *Router) roleRoute(app *fiber.App) {
 	user := api.Group("/role", middleware.IsAuth)
 	user.Get("/:id", r.handler.GetRole)
 	user.Put("/:id/update", r.handler.UpdateRole)
-	//user.Delete("/delete", r.handler.UserDelete)
-	//user.Delete("/:id/delete", r.handler.UserDelete)
+	user.Delete("/:id/delete", r.handler.DeleteRole)
 	//user.Post("/create", r.handler.CreateUser)
 }

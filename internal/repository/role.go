@@ -15,6 +15,7 @@ type RoleQuery interface {
 	GetTotalCount() (count int, err error)
 	GetById(roleId int) (role *model.Role, err error)
 	Update(role dto.Role) (updateRole *model.Role, err error)
+	Delete(roleId int) error
 }
 
 type roleQuery struct {
@@ -95,4 +96,24 @@ func (q *roleQuery) Update(role dto.Role) (*model.Role, error) {
 	}
 
 	return &updateRole, nil
+}
+
+// Delete удаление данных роли
+func (q *roleQuery) Delete(roleId int) error {
+	query := "DELETE FROM roles WHERE id = $1 RETURNING id"
+	result, err := q.db.Exec(query, roleId)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("роль не найдена")
+	}
+
+	return nil
 }

@@ -14,6 +14,7 @@ type RoleService interface {
 	GetAll(page int) (roles *dto.RoleAll, err error)
 	GetById(roleId int) (role *model.Role, err error)
 	Update(role dto.Role) (updateRole *model.Role, err error)
+	Delete(userId int) error
 }
 
 type roleService struct {
@@ -73,4 +74,13 @@ func (s *roleService) Update(role dto.Role) (*model.Role, error) {
 	}
 
 	return updateRole, nil
+}
+
+// Delete удаление роли
+func (s *roleService) Delete(userId int) error {
+	if err := s.dao.NewRoleQuery().Delete(userId); err != nil {
+		return err
+	}
+
+	return nil
 }

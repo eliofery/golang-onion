@@ -5,8 +5,9 @@ import (
 	"strconv"
 )
 
-// UserDelete удаление данных пользователя
-func (c *ServiceController) UserDelete(ctx fiber.Ctx) error {
+// DeleteUser удаление данных пользователя
+func (c *ServiceController) DeleteUser(ctx fiber.Ctx) error {
+	// TODO: вынести удаление авторизованного пользователя отдельно
 	userId, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil || userId <= 0 {
 		userId = *c.authService.GetUserIdFromToken(ctx)

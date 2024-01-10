@@ -166,9 +166,19 @@ func (q *userQuery) Update(user dto.UserUpdate) (*model.User, error) {
 
 // Delete удаление данных пользователя
 func (q *userQuery) Delete(userId int) error {
-	query := "DELETE FROM users WHERE id = $1"
-	if _, err := q.db.Exec(query, userId); err != nil {
+	query := "DELETE FROM users WHERE id = $1 RETURNING id"
+	result, err := q.db.Exec(query, userId)
+	if err != nil {
 		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("пользователь не найден")
 	}
 
 	return nil

@@ -1,0 +1,3 @@
+### Удаление данных пользователя по id
+DELETE http://127.0.0.1:3000/api/v1/role/3/delete
+authorization: token
