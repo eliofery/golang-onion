@@ -1,0 +1,8 @@
+### Обновление данных роли по id
+PUT http://127.0.0.1:3000/api/v1/role/1/update
+content-type: application/json
+authorization: token
+
+{
+    "name": "Новое название роли"
+}

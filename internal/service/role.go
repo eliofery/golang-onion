@@ -13,6 +13,7 @@ import (
 type RoleService interface {
 	GetAll(page int) (roles *dto.RoleAll, err error)
 	GetById(roleId int) (role *model.Role, err error)
+	Update(role dto.Role) (updateRole *model.Role, err error)
 }
 
 type roleService struct {
@@ -62,4 +63,14 @@ func (s *roleService) GetById(roleId int) (*model.Role, error) {
 	}
 
 	return role, nil
+}
+
+// Update обновить роль
+func (s *roleService) Update(role dto.Role) (*model.Role, error) {
+	updateRole, err := s.dao.NewRoleQuery().Update(role)
+	if err != nil {
+		return nil, err
+	}
+
+	return updateRole, nil
 }

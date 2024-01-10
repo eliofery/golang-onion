@@ -3,14 +3,18 @@ package repository
 import (
 	"database/sql"
 	"errors"
+	"github.com/eliofery/golang-angular/internal/dto"
 	"github.com/eliofery/golang-angular/internal/model"
+	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 // RoleQuery содержит запросы в базу данных для манипуляции с ролями
 type RoleQuery interface {
 	GetAll(limit, offset int) (roles []model.Role, err error)
 	GetTotalCount() (count int, err error)
-	GetById(roleId int) (*model.Role, error)
+	GetById(roleId int) (role *model.Role, err error)
+	Update(role dto.Role) (updateRole *model.Role, err error)
 }
 
 type roleQuery struct {
@@ -72,4 +76,23 @@ func (q *roleQuery) GetById(roleId int) (*model.Role, error) {
 	}
 
 	return &role, nil
+}
+
+// Update обновление данных ролей
+func (q *roleQuery) Update(role dto.Role) (*model.Role, error) {
+	query := "UPDATE roles SET name = $1 WHERE id = $2 RETURNING id, name"
+
+	var updateRole model.Role
+	err := q.db.QueryRow(query, role.Name, role.ID).Scan(&updateRole.ID, &updateRole.Name)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation {
+			return nil, errors.New("роль с таким именем существует")
+		} else if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.New("роль не найдена")
+		}
+		return nil, err
+	}
+
+	return &updateRole, nil
 }
