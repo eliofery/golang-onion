@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/eliofery/golang-angular/internal/dto"
+	"github.com/eliofery/golang-angular/internal/model"
 	"github.com/eliofery/golang-angular/internal/repository"
 	"github.com/eliofery/golang-angular/pkg/config"
 	"github.com/gofiber/fiber/v3/log"
@@ -11,6 +12,7 @@ import (
 
 type RoleService interface {
 	GetAll(page int) (roles *dto.RoleAll, err error)
+	GetById(roleId int) (role *model.Role, err error)
 }
 
 type roleService struct {
@@ -50,4 +52,14 @@ func (s *roleService) GetAll(page int) (*dto.RoleAll, error) {
 	result.Meta.LastPage = math.Ceil(float64(total) / float64(limit))
 
 	return &result, err
+}
+
+// GetById получить роли по id
+func (s *roleService) GetById(roleId int) (*model.Role, error) {
+	role, err := s.dao.NewRoleQuery().GetById(roleId)
+	if err != nil {
+		return role, err
+	}
+
+	return role, nil
 }

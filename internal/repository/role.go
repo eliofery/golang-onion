@@ -10,6 +10,7 @@ import (
 type RoleQuery interface {
 	GetAll(limit, offset int) (roles []model.Role, err error)
 	GetTotalCount() (count int, err error)
+	GetById(roleId int) (*model.Role, error)
 }
 
 type roleQuery struct {
@@ -55,4 +56,20 @@ func (q *roleQuery) GetTotalCount() (int, error) {
 	}
 
 	return count, nil
+}
+
+// GetById получить роль по id
+func (q *roleQuery) GetById(roleId int) (*model.Role, error) {
+	var role model.Role
+
+	query := "SELECT id, name FROM roles WHERE id = $1"
+	err := q.db.QueryRow(query, roleId).Scan(&role.ID, &role.Name)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.New("роль не найдена")
+		}
+		return nil, err
+	}
+
+	return &role, nil
 }
