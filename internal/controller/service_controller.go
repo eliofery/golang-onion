@@ -10,10 +10,11 @@ import (
 
 // ServiceController обработчик маршрутов
 type ServiceController struct {
-	validateService service.ValidateService
-	authService     service.AuthService
-	userService     service.UserService
-	roleService     service.RoleService
+	validateService   service.ValidateService
+	authService       service.AuthService
+	userService       service.UserService
+	roleService       service.RoleService
+	permissionService service.PermissionService
 }
 
 func NewServiceController(
@@ -21,14 +22,16 @@ func NewServiceController(
 	authService service.AuthService,
 	userService service.UserService,
 	roleService service.RoleService,
+	permissionService service.PermissionService,
 ) ServiceController {
 	log.Info("инициализация сервисов контроллера")
 
 	return ServiceController{
-		validateService: validateService,
-		authService:     authService,
-		userService:     userService,
-		roleService:     roleService,
+		validateService:   validateService,
+		authService:       authService,
+		userService:       userService,
+		roleService:       roleService,
+		permissionService: permissionService,
 	}
 }
 

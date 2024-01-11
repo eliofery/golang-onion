@@ -17,7 +17,7 @@ func (c *ServiceController) GetRoles(ctx fiber.Ctx) error {
 	resp := fiber.Map{
 		"success": true,
 		"message": "список ролей",
-		"users":   data.Roles,
+		"roles":   data.Roles,
 		"meta":    data.Meta,
 	}
 

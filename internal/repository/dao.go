@@ -10,6 +10,7 @@ type DAO interface {
 	NewUserQuery() UserQuery
 	NewSessionQuery() SessionQuery
 	NewRoleQuery() RoleQuery
+	NewPermissionQuery() PermissionQuery
 }
 
 type dao struct {
@@ -34,4 +35,9 @@ func (d *dao) NewSessionQuery() SessionQuery {
 // NewRoleQuery запросы в базу данных для ролей
 func (d *dao) NewRoleQuery() RoleQuery {
 	return &roleQuery{db: d.db}
+}
+
+// NewPermissionQuery запросы в базу данных для разрешений
+func (d *dao) NewPermissionQuery() PermissionQuery {
+	return &permissionQuery{db: d.db}
 }

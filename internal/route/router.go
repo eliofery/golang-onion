@@ -26,4 +26,5 @@ func (r *Router) Register(app *fiber.App) {
 	r.userRoute(app)
 	r.authRoute(app)
 	r.roleRoute(app)
+	r.permissionRoute(app)
 }
