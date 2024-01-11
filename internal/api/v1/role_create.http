@@ -4,5 +4,6 @@ content-type: application/json
 authorization: token
 
 {
-    "name": "Новая роль"
+    "name": "Новая роль",
+    "permissions": [1,2,3]
 }

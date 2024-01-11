@@ -6,7 +6,7 @@ import (
 
 // DeleteRole удаление данных роли
 func (c *ServiceController) DeleteRole(ctx fiber.Ctx) error {
-	roleId, err := c.idValidate(ctx)
+	roleId, err := c.getIdValidate(ctx)
 	if err != nil {
 		return err
 	}

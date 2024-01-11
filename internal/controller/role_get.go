@@ -6,7 +6,7 @@ import (
 
 // GetRole получение данных роли
 func (c *ServiceController) GetRole(ctx fiber.Ctx) error {
-	roleId, err := c.idValidate(ctx)
+	roleId, err := c.getIdValidate(ctx)
 	if err != nil {
 		return err
 	}

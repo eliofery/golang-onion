@@ -3,8 +3,15 @@ package dto
 import "github.com/eliofery/golang-angular/internal/model"
 
 type Role struct {
-	ID   int    `json:"id,omitempty"`
-	Name string `json:"name,omitempty" validate:"required"`
+	ID          int          `json:"id,omitempty"`
+	Name        string       `json:"name,omitempty" validate:"required"`
+	Permissions []Permission `json:"permissions,omitempty"`
+}
+
+type RolePermission struct {
+	ID          int    `json:"id,omitempty"`
+	Name        string `json:"name,omitempty" validate:"required"`
+	Permissions []int  `json:"permissions,omitempty" validate:"required"`
 }
 
 type RoleAll struct {

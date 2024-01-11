@@ -13,9 +13,9 @@ import (
 type RoleService interface {
 	GetAll(page int) (roles *dto.RoleAll, err error)
 	GetById(roleId int) (role *model.Role, err error)
-	Update(role dto.Role) (updateRole *model.Role, err error)
+	Update(role dto.RolePermission) (updateRole *model.Role, err error)
 	Delete(userId int) error
-	Create(role dto.Role) (roleId int, err error)
+	Create(role dto.RolePermission) (createdRole *model.Role, err error)
 }
 
 type roleService struct {
@@ -68,8 +68,17 @@ func (s *roleService) GetById(roleId int) (*model.Role, error) {
 }
 
 // Update обновить роль
-func (s *roleService) Update(role dto.Role) (*model.Role, error) {
-	updateRole, err := s.dao.NewRoleQuery().Update(role)
+func (s *roleService) Update(roleDto dto.RolePermission) (*model.Role, error) {
+	permissions := make([]model.Permission, len(roleDto.Permissions))
+	for i, permissionId := range roleDto.Permissions {
+		permissions[i] = model.Permission{ID: permissionId}
+	}
+
+	updateRole, err := s.dao.NewRoleQuery().Update(model.Role{
+		ID:          roleDto.ID,
+		Name:        roleDto.Name,
+		Permissions: permissions,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -87,11 +96,19 @@ func (s *roleService) Delete(userId int) error {
 }
 
 // Create создать роли
-func (s *roleService) Create(role dto.Role) (int, error) {
-	roleId, err := s.dao.NewRoleQuery().Create(role)
-	if err != nil {
-		return 0, err
+func (s *roleService) Create(roleDto dto.RolePermission) (*model.Role, error) {
+	permissions := make([]model.Permission, len(roleDto.Permissions))
+	for i, permissionId := range roleDto.Permissions {
+		permissions[i] = model.Permission{ID: permissionId}
 	}
 
-	return roleId, nil
+	var role model.Role
+	role.Name = roleDto.Name
+	role.Permissions = permissions
+	createdRole, err := s.dao.NewRoleQuery().Create(role)
+	if err != nil {
+		return nil, err
+	}
+
+	return createdRole, nil
 }

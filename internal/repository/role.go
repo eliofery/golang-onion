@@ -3,10 +3,12 @@ package repository
 import (
 	"database/sql"
 	"errors"
-	"github.com/eliofery/golang-angular/internal/dto"
+	"fmt"
 	"github.com/eliofery/golang-angular/internal/model"
+	"github.com/gofiber/fiber/v3/log"
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
+	"strings"
 )
 
 // RoleQuery содержит запросы в базу данных для манипуляции с ролями
@@ -14,9 +16,9 @@ type RoleQuery interface {
 	GetAll(limit, offset int) (roles []model.Role, err error)
 	GetTotalCount() (count int, err error)
 	GetById(roleId int) (role *model.Role, err error)
-	Update(role dto.Role) (updateRole *model.Role, err error)
+	Update(role model.Role) (updateRole *model.Role, err error)
 	Delete(roleId int) error
-	Create(user dto.Role) (roleId int, err error)
+	Create(user model.Role) (role *model.Role, err error)
 }
 
 type roleQuery struct {
@@ -81,22 +83,41 @@ func (q *roleQuery) GetById(roleId int) (*model.Role, error) {
 }
 
 // Update обновление данных ролей
-func (q *roleQuery) Update(role dto.Role) (*model.Role, error) {
-	query := "UPDATE roles SET name = $1 WHERE id = $2 RETURNING id, name"
-
-	var updateRole model.Role
-	err := q.db.QueryRow(query, role.Name, role.ID).Scan(&updateRole.ID, &updateRole.Name)
+func (q *roleQuery) Update(role model.Role) (*model.Role, error) {
+	query := "UPDATE roles SET name = $1 WHERE id = $2"
+	_, err := q.db.Exec(query, role.Name, role.ID)
 	if err != nil {
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation {
-			return nil, errors.New("роль с таким именем существует")
-		} else if errors.Is(err, sql.ErrNoRows) {
-			return nil, errors.New("роль не найдена")
-		}
+		log.Error(err)
 		return nil, err
 	}
 
-	return &updateRole, nil
+	query = "DELETE FROM role_permissions WHERE role_id = $1"
+	_, err = q.db.Exec(query, role.ID)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+
+	var args []any
+	args = append(args, role.ID)
+
+	placeholders := make([]string, len(role.Permissions))
+	for i, permission := range role.Permissions {
+		placeholders[i] = fmt.Sprintf("$%d", i+2)
+		args = append(args, permission.ID)
+	}
+
+	permissionsString := fmt.Sprintf("ARRAY[%s]::int[]", strings.Join(placeholders, ","))
+
+	query = "INSERT INTO role_permissions (role_id, permission_id) SELECT $1, unnest(" + permissionsString + ")"
+	log.Info(query, args)
+	_, err = q.db.Exec(query, args...)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+
+	return &role, nil
 }
 
 // Delete удаление данных роли
@@ -120,18 +141,33 @@ func (q *roleQuery) Delete(roleId int) error {
 }
 
 // Create создание пользователя
-func (q *roleQuery) Create(user dto.Role) (int, error) {
-	var roleId int
-
-	query := "INSERT INTO roles (name) VALUES ($1) RETURNING id"
-	err := q.db.QueryRow(query, user.Name).Scan(&roleId)
-	if err != nil {
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == pgerrcode.UniqueViolation {
-			return 0, errors.New("роль уже существует")
-		}
-		return 0, err
+func (q *roleQuery) Create(role model.Role) (*model.Role, error) {
+	args := make([]any, 0, len(role.Permissions)+1)
+	args = append(args, role.Name)
+	for _, permission := range role.Permissions {
+		args = append(args, permission.ID)
 	}
 
-	return roleId, nil
+	placeholders := make([]string, len(role.Permissions))
+	for i := range role.Permissions {
+		placeholders[i] = fmt.Sprintf("$%d", i+2)
+	}
+	permissionsString := fmt.Sprintf("ARRAY[%s]::int[]", strings.Join(placeholders, ","))
+
+	query := `WITH inserted_role AS (
+        INSERT INTO roles(name) VALUES($1) RETURNING id
+    )
+    INSERT INTO role_permissions(role_id, permission_id)
+    SELECT (SELECT id FROM inserted_role), unnest(` + permissionsString + `) AS permission_id RETURNING role_id`
+
+	if err := q.db.QueryRow(query, args...).Scan(&role.ID); err != nil {
+		var pgError *pgconn.PgError
+		if errors.As(err, &pgError) && pgError.Code == pgerrcode.UniqueViolation {
+			return nil, errors.New("роль уже существует")
+		}
+
+		return nil, err
+	}
+
+	return &role, nil
 }

@@ -50,8 +50,8 @@ func (c *ServiceController) bodyValidate(ctx fiber.Ctx, data any) error {
 	return nil
 }
 
-// idValidate валидация идентификатора
-func (c *ServiceController) idValidate(ctx fiber.Ctx) (*int, error) {
+// getIdValidate валидация идентификатора
+func (c *ServiceController) getIdValidate(ctx fiber.Ctx) (*int, error) {
 	id, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil || id <= 0 {
 		ctx.Status(fiber.StatusBadRequest)

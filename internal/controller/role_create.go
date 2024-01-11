@@ -7,12 +7,12 @@ import (
 
 // CreateRole создание роли
 func (c *ServiceController) CreateRole(ctx fiber.Ctx) error {
-	var role dto.Role
+	var role dto.RolePermission
 	if err := c.bodyValidate(ctx, &role); err != nil {
 		return err
 	}
 
-	roleId, err := c.roleService.Create(role)
+	createdRole, err := c.roleService.Create(role)
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError)
 		return err
@@ -21,6 +21,6 @@ func (c *ServiceController) CreateRole(ctx fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"success": true,
 		"message": "роль создана",
-		"id":      roleId,
+		"role":    createdRole,
 	})
 }

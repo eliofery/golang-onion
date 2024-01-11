@@ -7,12 +7,12 @@ import (
 
 // UpdateRole обновление данных роли
 func (c *ServiceController) UpdateRole(ctx fiber.Ctx) error {
-	var role dto.Role
+	var role dto.RolePermission
 	if err := c.bodyValidate(ctx, &role); err != nil {
 		return err
 	}
 
-	roleId, err := c.idValidate(ctx)
+	roleId, err := c.getIdValidate(ctx)
 	if err != nil {
 		return err
 	}
