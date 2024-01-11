@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/eliofery/golang-angular/internal/validation"
-	"github.com/eliofery/golang-angular/pkg/utils"
+	"github.com/eliofery/golang-onion/internal/validation"
+	"github.com/eliofery/golang-onion/pkg/utils"
 	"github.com/gofiber/fiber/v3/log"
 )
 

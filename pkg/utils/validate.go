@@ -2,7 +2,7 @@ package utils
 
 import (
 	"errors"
-	"github.com/eliofery/golang-angular/internal/validation"
+	"github.com/eliofery/golang-onion/internal/validation"
 	"github.com/go-playground/locales/en"
 	"github.com/go-playground/locales/ru"
 	ut "github.com/go-playground/universal-translator"

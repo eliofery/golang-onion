@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 	"errors"
-	"github.com/eliofery/golang-angular/internal/database"
+	"github.com/eliofery/golang-onion/internal/database"
 	"github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v3/log"
 	"github.com/jackc/pgx/v5/stdlib"

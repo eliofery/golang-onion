@@ -1,6 +1,6 @@
 package dto
 
-import "github.com/eliofery/golang-angular/internal/model"
+import "github.com/eliofery/golang-onion/internal/model"
 
 type Role struct {
 	ID          int          `json:"id,omitempty"`

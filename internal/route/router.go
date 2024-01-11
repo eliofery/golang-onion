@@ -1,8 +1,8 @@
 package route
 
 import (
-	"github.com/eliofery/golang-angular/internal/controller"
-	"github.com/eliofery/golang-angular/pkg/core"
+	"github.com/eliofery/golang-onion/internal/controller"
+	"github.com/eliofery/golang-onion/pkg/core"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/log"
 )

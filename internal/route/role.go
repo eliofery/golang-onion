@@ -1,7 +1,7 @@
 package route
 
 import (
-	"github.com/eliofery/golang-angular/internal/middleware"
+	"github.com/eliofery/golang-onion/internal/middleware"
 	"github.com/gofiber/fiber/v3"
 )
 

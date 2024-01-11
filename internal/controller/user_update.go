@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/eliofery/golang-angular/internal/dto"
+	"github.com/eliofery/golang-onion/internal/dto"
 	"github.com/gofiber/fiber/v3"
 	"strconv"
 )

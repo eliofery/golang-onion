@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/eliofery/golang-angular/internal/dto"
-	"github.com/eliofery/golang-angular/internal/repository"
-	"github.com/eliofery/golang-angular/pkg/config"
+	"github.com/eliofery/golang-onion/internal/dto"
+	"github.com/eliofery/golang-onion/internal/repository"
+	"github.com/eliofery/golang-onion/pkg/config"
 	"github.com/gofiber/fiber/v3/log"
 	"math"
 	"strconv"

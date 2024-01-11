@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"errors"
-	"github.com/eliofery/golang-angular/internal/repository"
-	"github.com/eliofery/golang-angular/pkg/utils"
+	"github.com/eliofery/golang-onion/internal/repository"
+	"github.com/eliofery/golang-onion/pkg/utils"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/log"
 	"strconv"

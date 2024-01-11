@@ -2,7 +2,7 @@ package controller
 
 import (
 	"errors"
-	"github.com/eliofery/golang-angular/internal/service"
+	"github.com/eliofery/golang-onion/internal/service"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/log"
 	"strconv"

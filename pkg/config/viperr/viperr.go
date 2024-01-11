@@ -2,7 +2,7 @@ package viperr
 
 import (
 	"errors"
-	"github.com/eliofery/golang-angular/pkg/config"
+	"github.com/eliofery/golang-onion/pkg/config"
 	"github.com/gofiber/fiber/v3/log"
 	"github.com/spf13/viper"
 	"strings"

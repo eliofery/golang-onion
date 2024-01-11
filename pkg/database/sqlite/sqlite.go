@@ -2,8 +2,8 @@ package sqlite
 
 import (
 	"database/sql"
-	"github.com/eliofery/golang-angular/pkg/config"
-	"github.com/eliofery/golang-angular/pkg/database"
+	"github.com/eliofery/golang-onion/pkg/config"
+	"github.com/eliofery/golang-onion/pkg/database"
 	"github.com/gofiber/fiber/v3/log"
 	_ "github.com/mattn/go-sqlite3"
 )

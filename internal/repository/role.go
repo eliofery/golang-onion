@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/eliofery/golang-angular/internal/model"
+	"github.com/eliofery/golang-onion/internal/model"
 	"github.com/gofiber/fiber/v3/log"
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"

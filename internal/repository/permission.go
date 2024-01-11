@@ -3,7 +3,7 @@ package repository
 import (
 	"database/sql"
 	"errors"
-	"github.com/eliofery/golang-angular/internal/model"
+	"github.com/eliofery/golang-onion/internal/model"
 )
 
 // PermissionQuery содержит запросы в базу данных для манипуляции с разрешениями
