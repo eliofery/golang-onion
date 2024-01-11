@@ -6,7 +6,9 @@ CREATE TABLE IF NOT EXISTS users
     first_name    VARCHAR(50),
     last_name     VARCHAR(50),
     email         VARCHAR(50) UNIQUE NOT NULL,
-    password_hash VARCHAR(255)       NOT NULL
+    password_hash VARCHAR(255)       NOT NULL,
+    role_id       INT                NOT NULL,
+    FOREIGN KEY (role_id) REFERENCES roles (id)
 );
 -- +goose StatementEnd
 

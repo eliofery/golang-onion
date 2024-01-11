@@ -21,5 +21,6 @@ authorization: token
     "last_name": "Marli 15",
     "email": "root2@si1te.org",
     "password": "321",
-    "password_confirm": "321"
+    "password_confirm": "321",
+    "role_id": 4
 }

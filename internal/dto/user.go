@@ -2,30 +2,24 @@ package dto
 
 import "github.com/eliofery/golang-angular/internal/model"
 
-type userRequiredFields struct {
+type UserCreate struct {
 	ID              int    `json:"id,omitempty"`
 	FirstName       string `json:"first_name,omitempty"`
 	LastName        string `json:"last_name,omitempty"`
 	Email           string `json:"email" validate:"required,email"`
 	Password        string `json:"password,omitempty" validate:"required"`
 	PasswordConfirm string `json:"password_confirm,omitempty" validate:"required,eqfield=Password"`
+	RoleID          int    `json:"role_id,omitempty"`
 }
 
-type userNotRequiredFields struct {
+type UserUpdate struct {
 	ID              int    `json:"id,omitempty"`
 	FirstName       string `json:"first_name,omitempty"`
 	LastName        string `json:"last_name,omitempty"`
 	Email           string `json:"email" validate:"email"`
 	Password        string `json:"password,omitempty"`
 	PasswordConfirm string `json:"password_confirm,omitempty" validate:"eqfield=Password"`
-}
-
-type UserCreate struct {
-	userRequiredFields
-}
-
-type UserUpdate struct {
-	userNotRequiredFields
+	RoleID          int    `json:"role_id,omitempty"`
 }
 
 type UserAuth struct {

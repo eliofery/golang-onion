@@ -53,6 +53,9 @@ func (s *userService) Create(user dto.UserCreate) (int, error) {
 		return 0, err
 	}
 
+	if user.RoleID == 0 {
+		user.RoleID = model.GuestRole
+	}
 	user.Password = string(passwordHash)
 	userId, err := s.dao.NewUserQuery().Create(user)
 	if err != nil {

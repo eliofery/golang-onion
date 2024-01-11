@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/eliofery/golang-angular/internal/dto"
 	"github.com/eliofery/golang-angular/internal/middleware"
+	"github.com/eliofery/golang-angular/internal/model"
 	"github.com/eliofery/golang-angular/internal/repository"
 	"github.com/eliofery/golang-angular/pkg/utils"
 	"github.com/gofiber/fiber/v3"
@@ -52,6 +53,7 @@ func (s *authService) Register(ctx fiber.Ctx, user dto.UserCreate) (string, erro
 	}
 
 	user.Password = string(passwordHash)
+	user.RoleID = model.GuestRole
 	userId, err := s.dao.NewUserQuery().Create(user)
 	if err != nil {
 		return "", err

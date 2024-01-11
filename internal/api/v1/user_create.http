@@ -4,12 +4,14 @@ content-type: application/json
 authorization: token
 
 # Необязательные поля
-# "first_name": "Bob",
-# "last_name": "Marley",
+# first_name
+# last_name
+# role_id
 {
     "first_name": "Bob",
     "last_name": "Marley",
     "email": "user@site.org",
     "password": "123",
-    "password_confirm": "123"
+    "password_confirm": "123",
+    "role_id": 2
 }
