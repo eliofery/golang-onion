@@ -9,7 +9,6 @@ type SessionQuery interface {
 	Create(userId int, token string) error
 	DeleteByToken(token string) error
 	DeleteByUserId(userId int) error
-	GetByToken(token string) error
 }
 
 type sessionQuery struct {
@@ -42,17 +41,6 @@ func (q *sessionQuery) DeleteByToken(token string) error {
 func (q *sessionQuery) DeleteByUserId(userId int) error {
 	query := "DELETE FROM sessions WHERE user_id = $1"
 	_, err := q.db.Exec(query, userId)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// GetByToken получение сессии по токену
-func (q *sessionQuery) GetByToken(token string) error {
-	query := "SELECT id FROM sessions WHERE token = $1"
-	_, err := q.db.Exec(query, token)
 	if err != nil {
 		return err
 	}
