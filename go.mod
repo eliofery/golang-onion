@@ -1,4 +1,4 @@
-module github.com/eliofery/golang-angular
+module github.com/eliofery/golang-onion
 
 go 1.21.5
 
